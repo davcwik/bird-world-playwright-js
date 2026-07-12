@@ -33,28 +33,32 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
+  // This uses the defaulty chromium installation that Github actions uses to run tests in the cloud
+  // if you want to use the actual Chrome browser on your laptop, you need to instead scroll down to
+  // the similar code block that also includes the "channel: 'chrome'" code
+  // but be aware that using 'channel' property will cause problems when Github Actions runs tests in the c
   projects: [
     {
-      name: 'chromium',
+      name: 'Desktop Chrome (Chromium)',
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
-    // Causes error during setup because laptop is running old OS (Ventura 13)
+    // Causes error during setup because webkit wont' load since laptop is running old OS (Ventura 13)
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
     // },
 
-    /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
+    // /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
@@ -65,10 +69,10 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-   {
-     name: 'Google Chrome',
-     use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-   },
+  //  {
+  //    name: 'Google Chrome',
+  //    use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+  //  },
   ],
 
   /* Run your local dev server before starting the tests */
