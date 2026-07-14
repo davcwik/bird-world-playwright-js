@@ -14,10 +14,11 @@ let loginPage: LoginPage;
 
 
 test.beforeEach(async ({ page }) => {
-  // instantiate a completely fresh page object before every single test run
+  // instantiate a completely fresh loginPage object before every single test run
   // necessary to run tests in parallel
   loginPage = new LoginPage(page);
 });
+
 
 ///////////
 // TESTS //
@@ -26,6 +27,7 @@ test.beforeEach(async ({ page }) => {
 test('Login Success and Logout happy path (user email)', async ({ page }) => {
   
     await loginPage.goToLoginPage();
+    await loginPage.theLoginPageIsDisplayed();
 
   // 2. Expect the page title to contain a specific word
   await expect(page).toHaveTitle(/Playwright/);

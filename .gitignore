@@ -1,3 +1,5 @@
+# Log files
+npm-debug.log*
 
 # Playwright
 node_modules/
@@ -6,3 +8,10 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Environment configurations (Do not remove for security purposes)
+.env
+.env.*
+
+# BUT do not ignore the env example template file
+!.env.example

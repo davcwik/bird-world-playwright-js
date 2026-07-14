@@ -18,6 +18,12 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
+      # Map your secure GitHub UI keys into the execution environment
+      env:
+        BASE_URL: '${{ secrets.PROD_BASE_URL }}'
+        SUBSCRIBER_USER_EMAIL: '${{ secrets.SUBSCRIBER_USER_EMAIL }}'
+        SUBSCRIBER_USER_NAME: '${{ secrets.SUBSCRIBER_USER_NAME }}'
+        SUBSCRIBER_USER_PASSWORD: '${{ secrets.SUBSCRIBER_USER_PASSWORD }}'
       run: npx playwright test
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
