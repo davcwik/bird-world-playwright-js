@@ -31,7 +31,7 @@ export class LoginPage {
   ///////////////
 
   async goToLoginPage() {
-    await this.page.goto('https://blackbird77.com/wp-login');
+    await this.page.goto('https://blackbird77.com/wp-login.php');
   }
 
     async theLoginPageIsDisplayed() {
