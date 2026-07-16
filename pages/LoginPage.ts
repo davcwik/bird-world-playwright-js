@@ -19,7 +19,7 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.logInForm = page.locator('#loginForm');
+    this.logInForm = page.locator('#loginform');
     this.usernameInput = page.getByLabel('Username or Email Address');
     this.passwordInput = page.getByLabel('Password');
     this.logInButton = page.getByRole('button', { name: 'Log In' });
