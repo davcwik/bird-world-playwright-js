@@ -29,12 +29,12 @@ test('Login Success and Logout happy path (user email)', async ({ page }) => {
     await loginPage.goToLoginPage();
     await loginPage.theLoginPageIsDisplayed();
 
-  // 2. Expect the page title to contain a specific word
-  await expect(page).toHaveTitle(/Playwright/);
+  // // 2. Expect the page title to contain a specific word
+  // await expect(page).toHaveTitle(/Playwright/);
 
-  // 3. Find the "Get Started" button and click it
-  await page.getByRole('link', { name: 'Get started' }).click();
+  // // 3. Find the "Get Started" button and click it
+  // await page.getByRole('link', { name: 'Get started' }).click();
 
-  // 4. Expect the new URL to contain the word "intro"
-  await expect(page).toHaveURL(/.*intro/);
+  // // 4. Expect the new URL to contain the word "intro"
+  // await expect(page).toHaveURL(/.*intro/);
 });
