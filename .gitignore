@@ -13,5 +13,6 @@ node_modules/
 .env
 .env.*
 
-# BUT do not ignore the env example template file
+# BUT do not ignore the following env files
 !.env.example
+!.env.production.gpg
