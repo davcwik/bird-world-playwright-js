@@ -36,6 +36,7 @@ jobs:
     - name: Decrypt Environment File
       env:
         ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
+        ENV: ${{ inputs.environment }}
       run: |
         gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
         --output .env.$ENV .env.$ENV.gpg
