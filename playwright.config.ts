@@ -27,18 +27,6 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'https://blackbird77.com/',
-
-    // The following properties are to emulate an actual user
-    // Without this, when tests run via Github pipeline, the test website will block access 
-    // to the site with a 403 error and the tests will fail
-    // the 403 error is intentional by the website host to prevent bot visits
-    viewport: { width: 1280, height: 720 }, // standard desktop browser viewport
-    //userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36', // set a realistic User-Agent to bypass basic datacenter bot blocks
-    userAgent: 'DavidPlaywrightBot-123',
-    extraHTTPHeaders: {
-      'Accept-Language': 'en-US,en;q=0.9', // standard browser headers
-    },
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
