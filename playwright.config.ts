@@ -1,12 +1,25 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const environment = process.env.ENV || 'production';
+
+// verify that the ENV variable was passed
+if (!environment) {
+  throw new Error("CRITICAL CONFIG ERROR: The ENV environment variable is not set.");
+}
+
+// construct the path for the decrypted .env file
+const envFilePath = path.resolve(__dirname, `.env.${environment}`);
+
+// if the file does not exist, end the run
+if (!fs.existsSync(envFilePath)) {
+  throw new Error(`CRITICAL CONFIG ERROR: Environment file not found at expected path: "${envFilePath}". Ensure decryption step completed successfully.`);
+}
+
+// load the file
+dotenv.config({ path: envFilePath });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -26,7 +39,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'https://blackbird77.com/',
+    baseURL: process.env.BASE_URL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },

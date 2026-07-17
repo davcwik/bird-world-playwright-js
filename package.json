@@ -17,6 +17,8 @@
   "homepage": "https://github.com/davcwik/bird-world-playwright-js#readme",
   "devDependencies": {
     "@playwright/test": "^1.61.1",
-    "@types/node": "^26.1.1"
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^26.1.1",
+    "dotenv": "^17.4.2"
   }
 }
