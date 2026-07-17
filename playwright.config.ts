@@ -33,7 +33,8 @@ export default defineConfig({
     // to the site with a 403 error and the tests will fail
     // the 403 error is intentional by the website host to prevent bot visits
     viewport: { width: 1280, height: 720 }, // standard desktop browser viewport
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36', // set a realistic User-Agent to bypass basic datacenter bot blocks
+    //userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36', // set a realistic User-Agent to bypass basic datacenter bot blocks
+    userAgent: 'DavidPlaywrightBot-123',
     extraHTTPHeaders: {
       'Accept-Language': 'en-US,en;q=0.9', // standard browser headers
     },
