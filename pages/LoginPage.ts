@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { EnvFileReader } from '../utils/EnvFileReader';
 
 export class LoginPage {
 
@@ -8,7 +9,7 @@ export class LoginPage {
 
   private readonly page: Page;
   private readonly logInForm: Locator;
-  private readonly usernameInput: Locator;
+  private readonly usernameEmailInput: Locator;
   private readonly passwordInput: Locator;
   private readonly logInButton: Locator;
 
@@ -20,8 +21,8 @@ export class LoginPage {
   constructor(page: Page) {
     this.page = page;
     this.logInForm = page.locator('#loginform');
-    this.usernameInput = page.getByLabel('Username or Email Address');
-    this.passwordInput = page.getByLabel('Password');
+    this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.logInButton = page.getByRole('button', { name: 'Log In' });
   }
 
@@ -37,6 +38,28 @@ export class LoginPage {
     async theLoginPageIsDisplayed() {
       await expect(this.logInForm).toBeVisible();
   }
+
+    async inputTextInUsernameEmailField(myText: string) {
+      const username = EnvFileReader.getProperty(myText);
+      //await this.usernameEmailInput.click();
+      await this.usernameEmailInput.fill(myText);
+  }  
+
+    async inputTextInPasswordField(myText: string) {
+      const username = EnvFileReader.getProperty(myText);
+      //await this.passwordInput.click();
+      await this.passwordInput.fill(myText);
+  }   
+
+    async clickLogInButton() {
+      await this.logInButton.click();
+  }   
+
+
+
+
+      // 
+      // await page.getByRole('menuitem', { name: 'Log Out' }).click();
 
   // async login(user: string, pass: string) {
   //   await this.usernameInput.fill(user);

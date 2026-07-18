@@ -30,6 +30,11 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
   
       await loginPage.goToLoginPage();
       await loginPage.theLoginPageIsDisplayed();
+      await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+      await loginPage.inputTextInPasswordField("SUBSCRIBER_PASSWORD");
+      await loginPage.clickLogInButton();
+
+
 
 
   });
