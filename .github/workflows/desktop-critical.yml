@@ -1,0 +1,41 @@
+name: Desktop Critical Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        type: choice
+        options:
+          - production
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Decrypt Environment File
+        env:
+            ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
+            ENV: ${{ inputs.environment }}
+        run: |
+            gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
+            --output .env.$ENV .env.$ENV.gpg
+      
+      - name: Run Desktop Critical Tests
+        env:
+          ENV: ${{ inputs.environment }}
+        run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)"

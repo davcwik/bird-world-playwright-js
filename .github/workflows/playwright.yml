@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: All Playwright Tests
 
 on:
   # This makes the pipeline strictly manual-only
