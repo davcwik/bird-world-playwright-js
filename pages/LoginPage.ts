@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { EnvFileReader } from '../utils/EnvFileReader';
+import { fillSecret } from '../utils/SecureActions';
 
 export class LoginPage {
 
@@ -39,14 +40,22 @@ export class LoginPage {
       await expect(this.logInForm).toBeVisible();
   }
 
+    /**
+   * Input text in Username Email input field (fillSecret will mask text in logs)
+   * @param myText - text to input
+   */
   async inputTextInUsernameEmailField(myText: string) {
       const username = EnvFileReader.getProperty(myText);
-      await this.usernameEmailInput.fill(username, { sensitive: true });
+      await fillSecret(this.usernameEmailInput, username);
   }  
 
+  /**
+   * Input text in Password input field (fillSecret will mask text in logs)
+   * @param myText - text to input
+   */
   async inputTextInPasswordField(myText: string) {
       const password = EnvFileReader.getProperty(myText);
-      await this.passwordInput.fill(password, { sensitive: true });
+      await fillSecret(this.passwordInput, password);
   }   
 
   async clickLogInButton() {
