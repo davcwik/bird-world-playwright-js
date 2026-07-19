@@ -35,23 +35,21 @@ export class LoginPage {
     await this.page.goto('/wp-login.php');
   }
 
-    async theLoginPageIsDisplayed() {
+  async expectLoginPageToBeVisible() {
       await expect(this.logInForm).toBeVisible();
   }
 
-    async inputTextInUsernameEmailField(myText: string) {
+  async inputTextInUsernameEmailField(myText: string) {
       const username = EnvFileReader.getProperty(myText);
-      //await this.usernameEmailInput.click();
       await this.usernameEmailInput.fill(myText);
   }  
 
-    async inputTextInPasswordField(myText: string) {
+  async inputTextInPasswordField(myText: string) {
       const username = EnvFileReader.getProperty(myText);
-      //await this.passwordInput.click();
       await this.passwordInput.fill(myText);
   }   
 
-    async clickLogInButton() {
+  async clickLogInButton() {
       await this.logInButton.click();
   }   
 

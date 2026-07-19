@@ -7,10 +7,7 @@ export class ProfilePage {
   ///////////////
 
   private readonly page: Page;
-  private readonly logInForm: Locator;
-  private readonly usernameEmailInput: Locator;
-  private readonly passwordInput: Locator;
-  private readonly logInButton: Locator;
+  private readonly profileForm: Locator;
 
 
   /////////////////
@@ -19,10 +16,7 @@ export class ProfilePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.logInForm = page.locator('#loginform');
-    this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
-    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
-    this.logInButton = page.getByRole('button', { name: 'Log In' });
+    this.profileForm = page.locator('#profile-form');
   }
 
   
@@ -30,8 +24,8 @@ export class ProfilePage {
   // FUNCTIONS //
   ///////////////
 
-    async theProfilePageIsDisplayed() {
-      await expect(this.logInForm).toBeVisible();
+  async expectProfilePageToBeVisible() {
+    await expect(this.profileForm).toBeVisible();
   }
 
 
