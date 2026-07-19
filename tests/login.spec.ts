@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import { ProfilePage } from '../pages/ProfilePage';
+import { GlobalHeader } from '../pages/GlobalHeader';
 
 ///////////////
 // VARIABLES //
 ///////////////
 
+let globalHeader: GlobalHeader;
 let loginPage: LoginPage;
+let profilePage: ProfilePage;
 
 
 ///////////
@@ -14,9 +18,11 @@ let loginPage: LoginPage;
 
 
 test.beforeEach(async ({ page }) => {
-  // instantiate a completely fresh loginPage object before every single test run
+  // instantiate a completely fresh page object before every single test run
   // necessary to run tests in parallel
+  globalHeader = new GlobalHeader(page);
   loginPage = new LoginPage(page);
+  profilePage = new ProfilePage(page);
 });
 
 
@@ -28,22 +34,24 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
   test('Login Success and Logout happy path (user email) @priority-critical', async ({ page }) => {
   
-      await loginPage.goToLoginPage();
-      await loginPage.theLoginPageIsDisplayed();
-      await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
-      await loginPage.inputTextInPasswordField("SUBSCRIBER_PASSWORD");
-      await loginPage.clickLogInButton();
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
+
+    await globalHeader.hoverOverUserAvatarImage();
+    await globalHeader.clickLogOutButton();
+    await loginPage.expectLoginPageToBeVisible();
+
+
 
 
 
 
   });
-
-      //     When R: I input the following values in the Login form on the Login Page:
-    //   | Email Username        | Password                 |
-    //   | subscriber_user_email | subscriber_user_password |
-    // And R: I click the Log In button on the Login Page
-    // Then R: The Profile Page is displayed
+});
 
     // When D: I hover over the User avatar image in the Global Header
     // And R: I click the Log Out button in the Global Header
@@ -61,4 +69,3 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
   // await expect(page).toHaveURL(/.*intro/);
 
 
-});
