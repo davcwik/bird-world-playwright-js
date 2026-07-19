@@ -37,7 +37,7 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
     await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
-    await loginPage.inputTextInPasswordField("SUBSCRIBER_PASSWORD");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
     await loginPage.clickLogInButton();
     await profilePage.expectProfilePageToBeVisible();
 
@@ -53,9 +53,6 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
   });
 });
 
-    // When D: I hover over the User avatar image in the Global Header
-    // And R: I click the Log Out button in the Global Header
-    // Then R: The Login Page is displayed
     // And R: The following message text is displayed on the Login Page:
     //   | You are now logged out. |
 
