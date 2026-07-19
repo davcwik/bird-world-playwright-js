@@ -58,19 +58,13 @@ export class LoginPage {
       await fillSecret(this.passwordInput, password);
   }   
 
+  async expectMessageTextToBeVisible(myText: string) {
+      
+  }
+
   async clickLogInButton() {
       await this.logInButton.click();
   }   
 
 
-
-
-      // 
-      // await page.getByRole('menuitem', { name: 'Log Out' }).click();
-
-  // async login(user: string, pass: string) {
-  //   await this.usernameInput.fill(user);
-  //   await this.passwordInput.fill(pass);
-  //   await this.submitButton.click();
-  // }
 }
