@@ -16,7 +16,7 @@ export class ProfilePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.profileForm = page.locator('#profile-form');
+    this.profileForm = page.locator('#your-profile');
   }
 
   

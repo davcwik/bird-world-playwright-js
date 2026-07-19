@@ -18,7 +18,7 @@ export class GlobalHeader {
 
   constructor(page: Page) {
     this.page = page;
-    this.avatarImage = page.locator('img.avatar');
+    this.avatarImage = page.locator('li.menupop.with-avatar');
     this.logOutButton = page.getByRole('menuitem', { name: 'Log Out' });
     this.profileFlyoutMenu = page.locator('li.menupop.with-avatar.hover');
   }
