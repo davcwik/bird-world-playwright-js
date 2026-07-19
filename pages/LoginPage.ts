@@ -41,12 +41,12 @@ export class LoginPage {
 
   async inputTextInUsernameEmailField(myText: string) {
       const username = EnvFileReader.getProperty(myText);
-      await this.usernameEmailInput.fill(username);
+      await this.usernameEmailInput.fill(username, { sensitive: true });
   }  
 
   async inputTextInPasswordField(myText: string) {
       const password = EnvFileReader.getProperty(myText);
-      await this.passwordInput.fill(password);
+      await this.passwordInput.fill(password, { sensitive: true });
   }   
 
   async clickLogInButton() {

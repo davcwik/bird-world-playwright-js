@@ -61,7 +61,7 @@ export default defineConfig({
     //   use: { ...devices['Desktop Firefox'] },
     // },
 
-    // Causes error during setup because webkit wont' load since laptop is running old OS (Ventura 13)
+    // can't load webkit on old OS (Ventura 13)
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
