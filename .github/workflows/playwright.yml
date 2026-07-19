@@ -32,7 +32,9 @@ jobs:
       run: npm ci
 
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      # need to exlude WebKit browser install because it is not supported for MacOS 13
+      run: npx playwright install chromium firefox --with-deps
+      # run: npx playwright install --with-deps # installs all browsers
 
     - name: Decrypt Environment File
       env:
