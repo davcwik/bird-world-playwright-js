@@ -44,14 +44,13 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
     await globalHeader.hoverOverUserAvatarImage();
     await globalHeader.clickLogOutButton();
     await loginPage.expectLoginPageToBeVisible();
-    await.loginPage.expectMessageTextToBeVisible();
-
-
-
-
-
+    await loginPage.expectMessageTextToBeVisible("You are now logged out.");
 
   });
+
+
+
+  
 });
 
     // And R: The following message text is displayed on the Login Page:

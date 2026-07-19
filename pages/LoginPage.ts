@@ -13,6 +13,7 @@ export class LoginPage {
   private readonly usernameEmailInput: Locator;
   private readonly passwordInput: Locator;
   private readonly logInButton: Locator;
+  private readonly messageTextBlock: Locator;
 
 
   /////////////////
@@ -25,6 +26,7 @@ export class LoginPage {
     this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
     this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.logInButton = page.getByRole('button', { name: 'Log In' });
+    this.messageTextBlock = page.locator("//div[@id = 'login_error']//li[1]");
   }
 
   
@@ -37,7 +39,7 @@ export class LoginPage {
   }
 
   async expectLoginPageToBeVisible() {
-      await expect(this.logInForm).toBeVisible();
+    await expect(this.logInForm).toBeVisible();
   }
 
     /**
@@ -45,8 +47,8 @@ export class LoginPage {
    * @param myText - text to input
    */
   async inputTextInUsernameEmailField(myText: string) {
-      const username = EnvFileReader.getProperty(myText);
-      await fillSecret(this.usernameEmailInput, username);
+    const username = EnvFileReader.getProperty(myText);
+    await fillSecret(this.usernameEmailInput, username);
   }  
 
   /**
@@ -54,16 +56,16 @@ export class LoginPage {
    * @param myText - text to input
    */
   async inputTextInPasswordField(myText: string) {
-      const password = EnvFileReader.getProperty(myText);
-      await fillSecret(this.passwordInput, password);
+    const password = EnvFileReader.getProperty(myText);
+    await fillSecret(this.passwordInput, password);
   }   
 
   async expectMessageTextToBeVisible(myText: string) {
-      
+    await expect(this.messageTextBlock.getByText(myText)).toBeVisible();
   }
 
   async clickLogInButton() {
-      await this.logInButton.click();
+    await this.logInButton.click();
   }   
 
 
