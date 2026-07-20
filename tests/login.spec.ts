@@ -16,10 +16,8 @@ let profilePage: ProfilePage;
 // SETUP //
 ///////////
 
-
 test.beforeEach(async ({ page }) => {
-  // instantiate a completely fresh page object before every single test run
-  // necessary to run tests in parallel
+  // instantiate a fresh page object for every test, necessary to run tests in parallel
   globalHeader = new GlobalHeader(page);
   loginPage = new LoginPage(page);
   profilePage = new ProfilePage(page);
@@ -34,6 +32,7 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
   test('Login Success and Logout happy path (user email) @priority-critical', async ({ page }) => {
   
+    // Log in
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
     await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
@@ -41,11 +40,11 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
     await loginPage.clickLogInButton();
     await profilePage.expectProfilePageToBeVisible();
 
+    // Log out
     await globalHeader.hoverOverUserAvatarImage();
     await globalHeader.clickLogOutButton();
     await loginPage.expectLoginPageToBeVisible();
     await loginPage.expectMessageTextToBeVisible("You are now logged out.");
-
   });
 
 
@@ -53,16 +52,6 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
   
 });
 
-    // And R: The following message text is displayed on the Login Page:
-    //   | You are now logged out. |
 
-  // // 2. Expect the page title to contain a specific word
-  // await expect(page).toHaveTitle(/Playwright/);
-
-  // // 3. Find the "Get Started" button and click it
-  // await page.getByRole('link', { name: 'Get started' }).click();
-
-  // // 4. Expect the new URL to contain the word "intro"
-  // await expect(page).toHaveURL(/.*intro/);
 
 

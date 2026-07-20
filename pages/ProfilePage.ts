@@ -25,6 +25,7 @@ export class ProfilePage {
   ///////////////
 
   async expectProfilePageToBeVisible() {
+    await this.page.waitForLoadState('networkidle');
     await expect(this.profileForm).toBeVisible();
   }
 

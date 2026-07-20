@@ -26,7 +26,7 @@ export class LoginPage {
     this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
     this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.logInButton = page.getByRole('button', { name: 'Log In' });
-    this.messageTextBlock = page.locator("//div[@id = 'login_error']//li[1]");
+    this.messageTextBlock = page.locator("#login-message p");
   }
 
   
@@ -39,6 +39,7 @@ export class LoginPage {
   }
 
   async expectLoginPageToBeVisible() {
+    await this.page.waitForLoadState('networkidle');
     await expect(this.logInForm).toBeVisible();
   }
 

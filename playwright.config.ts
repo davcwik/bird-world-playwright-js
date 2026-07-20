@@ -43,9 +43,9 @@ export default defineConfig({
     /* Collect trace and screenshot */
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    // Delays every browser action by 150ms to bypass speed-based security blockers
+    // Delays every browser action by X ms to mimic human behavior
     launchOptions: {
-      slowMo: 150, 
+      slowMo: 500, 
     },
   },
 
