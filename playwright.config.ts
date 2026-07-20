@@ -40,9 +40,13 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: process.env.BASE_URL,
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure'
+    /* Collect trace and screenshot */
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    // Delays every browser action by X ms to mimic human behavior
+    launchOptions: {
+      slowMo: 500, 
+    },
   },
 
   /* Configure projects for major browsers */
@@ -61,7 +65,7 @@ export default defineConfig({
     //   use: { ...devices['Desktop Firefox'] },
     // },
 
-    // Causes error during setup because webkit wont' load since laptop is running old OS (Ventura 13)
+    // can't load webkit on old OS (Ventura 13)
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },

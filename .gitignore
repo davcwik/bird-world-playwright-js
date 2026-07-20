@@ -9,6 +9,9 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 
+# MacOS files
+.DS_Store
+
 # Environment configurations (Do not remove for security purposes)
 .env
 .env.*

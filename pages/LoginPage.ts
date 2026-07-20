@@ -1,4 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { EnvFileReader } from '../utils/EnvFileReader';
+import { fillSecret } from '../utils/SecureActions';
 
 export class LoginPage {
 
@@ -8,9 +10,10 @@ export class LoginPage {
 
   private readonly page: Page;
   private readonly logInForm: Locator;
-  private readonly usernameInput: Locator;
+  private readonly usernameEmailInput: Locator;
   private readonly passwordInput: Locator;
   private readonly logInButton: Locator;
+  private readonly messageTextBlock: Locator;
 
 
   /////////////////
@@ -20,9 +23,10 @@ export class LoginPage {
   constructor(page: Page) {
     this.page = page;
     this.logInForm = page.locator('#loginform');
-    this.usernameInput = page.getByLabel('Username or Email Address');
-    this.passwordInput = page.getByLabel('Password');
+    this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.logInButton = page.getByRole('button', { name: 'Log In' });
+    this.messageTextBlock = page.locator("#login-message p");
   }
 
   
@@ -34,13 +38,36 @@ export class LoginPage {
     await this.page.goto('/wp-login.php');
   }
 
-    async theLoginPageIsDisplayed() {
-      await expect(this.logInForm).toBeVisible();
+  async expectLoginPageToBeVisible() {
+    await this.page.waitForLoadState('networkidle');
+    await expect(this.logInForm).toBeVisible();
   }
 
-  // async login(user: string, pass: string) {
-  //   await this.usernameInput.fill(user);
-  //   await this.passwordInput.fill(pass);
-  //   await this.submitButton.click();
-  // }
+    /**
+   * Input text in Username Email input field (fillSecret will mask text in logs)
+   * @param myText - text to input
+   */
+  async inputTextInUsernameEmailField(myText: string) {
+    const username = EnvFileReader.getProperty(myText);
+    await fillSecret(this.usernameEmailInput, username);
+  }  
+
+  /**
+   * Input text in Password input field (fillSecret will mask text in logs)
+   * @param myText - text to input
+   */
+  async inputTextInPasswordField(myText: string) {
+    const password = EnvFileReader.getProperty(myText);
+    await fillSecret(this.passwordInput, password);
+  }   
+
+  async expectMessageTextToBeVisible(myText: string) {
+    await expect(this.messageTextBlock.getByText(myText)).toBeVisible();
+  }
+
+  async clickLogInButton() {
+    await this.logInButton.click();
+  }   
+
+
 }
