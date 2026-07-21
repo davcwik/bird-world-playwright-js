@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { ProfilePage } from '../pages/ProfilePage';
-import { GlobalHeader } from '../pages/GlobalHeader';
+import { LoginPage } from '../../pages/LoginPage';
+import { ProfilePage } from '../../pages/ProfilePage';
+import { GlobalHeader } from '../../pages/GlobalHeader';
 
 ///////////////
 // VARIABLES //
@@ -47,6 +47,11 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
     await loginPage.expectMessageTextToBeVisible("You are now logged out.");
   });
 
+  
+  test('Login Page Loads @priority-high', async ({ page }) => {
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+  });
 
 
   
