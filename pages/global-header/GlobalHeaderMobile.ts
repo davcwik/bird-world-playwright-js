@@ -16,7 +16,6 @@ export class GlobalHeaderMobile extends GlobalHeaderBase {
 
   constructor(page: any) {
     super(page);
-    
   }
 
 
@@ -25,11 +24,9 @@ export class GlobalHeaderMobile extends GlobalHeaderBase {
   ///////////////
 
     async tapUserAvatarImage() {
-
-
+      await this.avatarImage.tap();
+      this.expectProfileFlyoutMenuToBeVisible();
     }
-
-
 
 
 }

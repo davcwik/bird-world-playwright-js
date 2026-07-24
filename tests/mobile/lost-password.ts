@@ -2,7 +2,7 @@ import { test, expect } from '../../utils/PageFixtures';
 
 
 
-test.describe('Desktop - Lost Password', { tag: ['@platform-desktop', '@feature-lostPassword'] }, () => {
+test.describe('Mobile - Lost Password', { tag: ['@platform-mobile', '@feature-lostPassword'] }, () => {
 
   test('Lost Password happy path (user email) @priority-critical', async ({ loginPageBase, lostPasswordPageBase }) => {
 

@@ -1,47 +1,34 @@
 import { test, expect } from '../../utils/PageFixtures';
 
 
-///////////////
-// VARIABLES //
-///////////////
-
-
-
-///////////
-// SETUP //
-///////////
-
-
-
-
-///////////
-// TESTS //
-///////////
 
 test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
-  test('Login Success and Logout happy path (user email) @priority-critical', async ({ loginPage, globalHeader, profilePage }) => {
+  test('Login Success and Logout happy path (user email) @priority-critical', async ({ loginPageBase, globalHeaderDesktop, profilePageBase }) => {
   
     // Log in
-    await loginPage.goToLoginPage();
-    await loginPage.expectLoginPageToBeVisible();
-    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
-    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
-    await loginPage.clickLogInButton();
-    await profilePage.expectProfilePageToBeVisible();
+    await loginPageBase.goToLoginPage();
+    await loginPageBase.expectLoginPageToBeVisible();
+    await loginPageBase.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPageBase.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPageBase.clickLogInButton();
+    await profilePageBase.expectProfilePageToBeVisible();
 
     // Log out
-    await globalHeader.hoverOverUserAvatarImage();
-    await globalHeader.clickLogOutButton();
-    await loginPage.expectLoginPageToBeVisible();
-    await loginPage.expectMessageTextToBeVisible("You are now logged out.");
-  });
+    await globalHeaderDesktop.hoverOverUserAvatarImage();
+    await globalHeaderDesktop.clickLogOutButton();
+    await loginPageBase.expectLoginPageToBeVisible();
+    await loginPageBase.expectMessageTextToBeVisible("You are now logged out.");
+
+  }); // end test
 
   
-  test('Login Page Loads @priority-high', async ({ loginPage }) => {
-    await loginPage.goToLoginPage();
-    await loginPage.expectLoginPageToBeVisible();
-  });
+  test('Login Page Loads @priority-high', async ({ loginPageBase }) => {
+
+    await loginPageBase.goToLoginPage();
+    await loginPageBase.expectLoginPageToBeVisible();
+
+  }); // end test
 
 
   
