@@ -5,6 +5,10 @@ import fs from 'fs';
 
 const environment = process.env.ENV || 'production';
 
+////////////////////////
+// LOAD ENV FILE DATA //
+////////////////////////
+
 // verify that the ENV variable was passed
 if (!environment) {
   throw new Error("CRITICAL CONFIG ERROR: The ENV environment variable is not set.");
@@ -20,6 +24,11 @@ if (!fs.existsSync(envFilePath)) {
 
 // load the file
 dotenv.config({ path: envFilePath });
+
+
+///////////////////////////////
+// DEFAULT CONFIG PROPERTIES //
+///////////////////////////////
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -49,47 +58,39 @@ export default defineConfig({
     },
   },
 
-  /* Configure projects for major browsers */
-  // This uses the defaulty chromium installation that Github actions uses to run tests in the cloud
-  // if you want to use the actual Chrome browser on your laptop, you need to instead scroll down to
-  // the similar code block that also includes the "channel: 'chrome'" code
-  // but be aware that using 'channel' property will cause problems when Github Actions runs tests in the c
+  /////////////////////
+  // BROWSER CONFIGS //
+  /////////////////////
+
   projects: [
-    {
+    { // default chromium installation used by Github to run tests in the cloud
       name: 'Github Chrome (Chromium)',
       use: { ...devices['Desktop Chrome'] },
     },
-
+    {
+      name: 'Mobile Chrome',
+      use: {
+        ...devices['iPhone X'],
+        defaultBrowserType: 'chromium', // do not delete or else Webkit will be used instead of Chromium engine
+      }
+    },
+    { // actual Chrome browser on laptop, cannot be used when running tests in the cloud on Github
+      name: 'Desktop Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
+    {
+      name: 'api',
+      // No 'use' block needed because no browser launched
+    },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
     // },
-
     // can't load webkit on old OS (Ventura 13)
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
     // },
-
-    // /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    //{
-    //  name: 'Google Chrome',
-    //  use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    //},
   ],
 
   /* Run your local dev server before starting the tests */

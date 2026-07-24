@@ -2,18 +2,19 @@ import { expect, type Locator, type Page } from '@playwright/test';
 import { EnvFileReader } from '../utils/EnvFileReader';
 import { fillSecret } from '../utils/SecureActions';
 
-export class LoginPage {
+export class LoginPageBase {
 
   ///////////////
   // VARIABLES //
   ///////////////
 
-  private readonly page: Page;
-  private readonly logInForm: Locator;
-  private readonly usernameEmailInput: Locator;
-  private readonly passwordInput: Locator;
   private readonly logInButton: Locator;
+  private readonly logInFormContainer: Locator;
+  private readonly lostYourPasswordLink: Locator;  
   private readonly messageTextBlock: Locator;
+  private readonly page: Page;
+  private readonly passwordInput: Locator;
+  private readonly usernameEmailInput: Locator;
 
 
   /////////////////
@@ -21,12 +22,13 @@ export class LoginPage {
   /////////////////
 
   constructor(page: Page) {
-    this.page = page;
-    this.logInForm = page.locator('#loginform');
-    this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
-    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.logInButton = page.getByRole('button', { name: 'Log In' });
+    this.logInFormContainer = page.locator('#loginform');
+    this.lostYourPasswordLink = page.getByRole('link', { name: 'Lost your password?' });
     this.messageTextBlock = page.locator("#login-message p");
+    this.page = page;
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
+    this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
   }
 
   
@@ -40,7 +42,7 @@ export class LoginPage {
 
   async expectLoginPageToBeVisible() {
     await this.page.waitForLoadState('networkidle');
-    await expect(this.logInForm).toBeVisible();
+    await expect(this.logInFormContainer).toBeVisible();
   }
 
     /**
@@ -67,6 +69,10 @@ export class LoginPage {
 
   async clickLogInButton() {
     await this.logInButton.click();
+  }   
+
+  async clickLostYourPasswordLink() {
+    await this.lostYourPasswordLink.click();
   }   
 
 

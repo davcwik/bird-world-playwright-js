@@ -1,36 +1,26 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/LoginPage';
-import { ProfilePage } from '../../pages/ProfilePage';
-import { GlobalHeader } from '../../pages/GlobalHeader';
+import { test, expect } from '../../utils/PageFixtures';
+
 
 ///////////////
 // VARIABLES //
 ///////////////
 
-let globalHeader: GlobalHeader;
-let loginPage: LoginPage;
-let profilePage: ProfilePage;
 
 
 ///////////
 // SETUP //
 ///////////
 
-test.beforeEach(async ({ page }) => {
-  // instantiate a fresh page object for every test, necessary to run tests in parallel
-  globalHeader = new GlobalHeader(page);
-  loginPage = new LoginPage(page);
-  profilePage = new ProfilePage(page);
-});
+
 
 
 ///////////
 // TESTS //
 ///////////
 
-test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
+test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
-  test('Login Success and Logout happy path (user email) @priority-critical', async ({ page }) => {
+  test('Login Success and Logout happy path (user email) @priority-critical', async ({ loginPage, globalHeader, profilePage }) => {
   
     // Log in
     await loginPage.goToLoginPage();
@@ -48,7 +38,7 @@ test.describe('Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
   });
 
   
-  test('Login Page Loads @priority-high', async ({ page }) => {
+  test('Login Page Loads @priority-high', async ({ loginPage }) => {
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
   });
