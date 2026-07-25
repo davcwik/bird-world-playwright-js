@@ -1,10 +1,10 @@
-import { test as base, Page } from '@playwright/test';
-
+import { test as base, Page, APIRequestContext } from '@playwright/test';
 
 /////////////////////////////////////////////////
 // Import Page Classes (Base, Desktop, Mobile) //
 /////////////////////////////////////////////////
 
+import { ApiBase } from '../pages/ApiBase';
 import { GlobalHeaderBase } from '../pages/global-header/GlobalHeaderBase';
 import { GlobalHeaderDesktop } from '../pages/global-header/GlobalHeaderDesktop';
 import { GlobalHeaderMobile } from '../pages/global-header/GlobalHeaderMobile';
@@ -35,6 +35,10 @@ function createPage<T>(
 
 type FrameworkFixtures = {
 
+  // API Objects
+  apiBase: ApiBase;
+  request: APIRequestContext;
+
   // Non-Polymorphic Page Objects (no subclasses)
   loginPageBase: LoginPageBase;
   lostPasswordPageBase: LostPasswordPageBase;
@@ -53,6 +57,9 @@ type FrameworkFixtures = {
 export const test = base.extend<FrameworkFixtures>({
 
   // Non-Polymorphic Page Objects (no subclasses)
+  apiBase: async ({ request }, use) => {
+    await use(new ApiBase(request));
+  },
   loginPageBase: async ({ page }, use) => {
     await use(new LoginPageBase(page));
   },

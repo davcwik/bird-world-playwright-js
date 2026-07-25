@@ -79,7 +79,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
     {
-      name: 'api',
+      name: 'API',
       // No 'use' block needed because no browser launched
     },
     // {
