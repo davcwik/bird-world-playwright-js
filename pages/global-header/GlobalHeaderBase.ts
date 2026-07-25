@@ -1,13 +1,14 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
-export class GlobalHeader {
+
+export abstract class GlobalHeaderBase {
 
   ///////////////
   // VARIABLES //
   ///////////////
 
-  private readonly page: Page;
-  private readonly avatarImage: Locator;
+  protected readonly page: Page
+  protected readonly avatarImage: Locator;
   private readonly logOutButton: Locator;
   private readonly profileFlyoutMenu: Locator;  
 
@@ -23,22 +24,13 @@ export class GlobalHeader {
     this.profileFlyoutMenu = page.locator('li.menupop.with-avatar.hover');
   }
 
-  
+
   ///////////////
   // FUNCTIONS //
   ///////////////
 
   async expectProfileFlyoutMenuToBeVisible() {
     await expect(this.profileFlyoutMenu).toBeVisible();
-  }
-
-  /**
-   * Hover over the user avatar image
-   * Verify the Flyout Menu is visible
-   */
-  async hoverOverUserAvatarImage() {
-    await this.avatarImage.hover();
-    this.expectProfileFlyoutMenuToBeVisible();
   }
 
   async clickLogOutButton() {
