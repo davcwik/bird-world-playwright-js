@@ -3,7 +3,7 @@ import { EnvFileReader } from '../utils/EnvFileReader';
 
 
 /**
-* Interface representing the returned payload from ApiBase methods below
+* Interface representing the returned payload from methods below
 * Exported so other files can reference the type if needed
 */
 export interface ApiResponseData {
@@ -83,11 +83,11 @@ export class ApiBase {
   }
 
   /**
-  * constructs the full API endpoint url for the provided path
+  * constructs the full endpoint url for the provided path
   * @param myPath - the path without the base URL (ex. /wp-json/wp/v2/posts)
   * @return - the full url (baseURL + path)
   */
-  async constructEndpointURL(myPath: string) {
+  public constructEndpointURL(myPath: string) {
     return EnvFileReader.getProperty("BASE_URL") + myPath;
   }
     
