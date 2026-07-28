@@ -29,11 +29,11 @@ export abstract class GlobalHeaderBase {
   // FUNCTIONS //
   ///////////////
 
-  async expectProfileFlyoutMenuToBeVisible() {
+  async expectProfileFlyoutMenuToBeVisible(): Promise<void> {
     await expect(this.profileFlyoutMenu).toBeVisible();
   }
 
-  async clickLogOutButton() {
+  async clickLogOutButton(): Promise<void> {
     await this.logOutButton.click();
   }
 

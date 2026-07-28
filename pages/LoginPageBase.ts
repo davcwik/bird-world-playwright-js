@@ -36,11 +36,11 @@ export class LoginPageBase {
   // FUNCTIONS //
   ///////////////
 
-  async goToLoginPage() {
+  async goToLoginPage(): Promise<void> {
     await this.page.goto('/wp-login.php');
   }
 
-  async expectLoginPageToBeVisible() {
+  async expectLoginPageToBeVisible(): Promise<void> {
     await this.page.waitForLoadState('networkidle');
     await expect(this.logInFormContainer).toBeVisible();
   }
@@ -49,7 +49,7 @@ export class LoginPageBase {
    * Input text in Username Email input field (fillSecret will mask text in logs)
    * @param myText - text to input
    */
-  async inputTextInUsernameEmailField(myText: string) {
+  async inputTextInUsernameEmailField(myText: string): Promise<void> {
     const username = EnvFileReader.getProperty(myText);
     await fillSecret(this.usernameEmailInput, username);
   }  
@@ -58,20 +58,20 @@ export class LoginPageBase {
    * Input text in Password input field (fillSecret will mask text in logs)
    * @param myText - text to input
    */
-  async inputTextInPasswordField(myText: string) {
+  async inputTextInPasswordField(myText: string): Promise<void> {
     const password = EnvFileReader.getProperty(myText);
     await fillSecret(this.passwordInput, password);
   }   
 
-  async expectMessageTextToBeVisible(myText: string) {
+  async expectMessageTextToBeVisible(myText: string): Promise<void> {
     await expect(this.messageTextBlock.getByText(myText)).toBeVisible();
   }
 
-  async clickLogInButton() {
+  async clickLogInButton(): Promise<void> {
     await this.logInButton.click();
   }   
 
-  async clickLostYourPasswordLink() {
+  async clickLostYourPasswordLink(): Promise<void> {
     await this.lostYourPasswordLink.click();
   }   
 

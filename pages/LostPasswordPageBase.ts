@@ -35,16 +35,16 @@ export class LostPasswordPageBase {
   // FUNCTIONS //
   ///////////////
 
-  async goToLostPasswordPage() {
+  async goToLostPasswordPage(): Promise<void> {
     await this.page.goto('/wp-login.php?action=lostpassword');
   }
 
-  async expectLostPasswordPageToBeVisible() {
+  async expectLostPasswordPageToBeVisible(): Promise<void> {
     await this.page.waitForLoadState('networkidle');
     await expect(this.lostPasswordFormContainer).toBeVisible();
   }
 
-  async expectNotificationMessageTextToBeVisible(myText: string) {
+  async expectNotificationMessageTextToBeVisible(myText: string): Promise<void> {
     await expect(this.notificationMessageTextBlock.getByText(myText)).toBeVisible();
   }
 
@@ -52,16 +52,16 @@ export class LostPasswordPageBase {
    * Input text in Username Email Address input field (fillSecret will mask text in logs)
    * @param myText - text to input
    */
-  async inputTextInLostPasswordForm(myText: string) {
+  async inputTextInLostPasswordForm(myText: string): Promise<void> {
     const username = EnvFileReader.getProperty(myText);
     await fillSecret(this.usernameEmailAddressInput, username);
   }  
 
-  async clickGetNewPasswordButton() {
+  async clickGetNewPasswordButton(): Promise<void> {
     await this.getNewPasswordButton.click();
   }   
 
-  async clickLoginPageLink() {
+  async clickLoginPageLink(): Promise<void> {
     await this.loginPageLink.click();
   }  
 

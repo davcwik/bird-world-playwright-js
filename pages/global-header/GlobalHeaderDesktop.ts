@@ -27,7 +27,7 @@ export class GlobalHeaderDesktop extends GlobalHeaderBase {
   * Hover over the user avatar image
   * Verify the Flyout Menu is visible
   */
-  async hoverOverUserAvatarImage() {
+  async hoverOverUserAvatarImage(): Promise<void> {
     await this.avatarImage.hover();
     this.expectProfileFlyoutMenuToBeVisible();
   }

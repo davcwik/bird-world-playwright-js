@@ -23,7 +23,7 @@ export class GlobalHeaderMobile extends GlobalHeaderBase {
   // FUNCTIONS //
   ///////////////
 
-    async tapUserAvatarImage() {
+    async tapUserAvatarImage(): Promise<void> {
       await this.avatarImage.tap();
       this.expectProfileFlyoutMenuToBeVisible();
     }
