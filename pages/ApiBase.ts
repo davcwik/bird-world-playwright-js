@@ -3,12 +3,12 @@ import { EnvFileReader } from '../utils/EnvFileReader';
 
 
 /**
-* Interface representing the returned payload from ApiBase methods below
+* Interface representing the returned payload from methods below
 * Exported so other files can reference the type if needed
 */
-export interface ApiResponseData {
+export interface ApiResponseData<T = any> {
   statusCode: number;
-  responseData: any;
+  responseData: T;
 }
 
     
@@ -35,61 +35,73 @@ export class ApiBase {
   ///////////////
     
   /**
-  * Sends an HTTP request with NO PAYLOAD
-  * @param myRequestType - the endpoint request type (typically GET)
-  * @param myPath - the API endpoint path without the base URL (ex. /wp-json/wp/v2/posts)
-  * @return - the response status code and response data
-  */  
-  async sendHttpRequestNoPayload(myRequestType: string, myPath: string): Promise<ApiResponseData> {
+   * Send REST JSON API requests (GET, POST, PUT, DELETE)
+   * Can also be used for requests without any payload
+   * Automatically serializes payload to JSON and parses response as JSON
+   */
+  public async sendHttpRequestJson<T = any>(httpMethod: string, path: string, payload?: Record<string, any>): Promise<ApiResponseData<T>> {
     
-    // send request and get response
-    const myEndpointURL = this.constructEndpointURL(myPath);
-    const response = await this.sendHttpRequestAsType(myRequestType, myPath);
-    
-    // parse response body
-    let responseData: any;
-    try {
-      responseData = await response.json();
-    } catch {
-      responseData = await response.text();
-    }
+    const requestOptions = payload ? { data: payload } : undefined;
+    const response = await this.sendHttpRequestAsType(httpMethod, path, requestOptions);
 
-    // return response data
     return {
       statusCode: response.status(),
-      responseData: responseData,
-    }
+      responseData: await response.json(),
+    };
+  }  
 
+
+  /**
+   * For legacy Wordpress endpoints (ex. /wp-login.php) that have a Form Data payload (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
+   * Always returns raw text/HTML
+   */
+  public async sendHttpRequestFormData(httpMethod: string, path: string, formData: Record<string, string>): Promise<ApiResponseData<string>> {
+    
+    const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: formData });
+
+    return {
+      statusCode: response.status(),
+      responseData: await response.text(),
+    };
+  }
+
+
+  /**
+   * 
+   * @param httpMethod - GET, POST, etc.
+   * @param endpointURL - full url including domain (https://example.com/login)
+   * @param requestOptions - Optional Playwright request configuration object. Can contain:
+   *  - `data`: JSON body payload for REST endpoints
+   *  - `form`: Form Data (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
+   *  - `headers`: Custom HTTP headers (e.g., authorization tokens)
+   *  - `params`: URL query string parameters
+   *  - `timeout`: Request timeout in milliseconds
+   * @returns - Promise resolving to Playwright's raw APIResponse object
+   */
+  async sendHttpRequestAsType(httpMethod: string, endpointURL:string, requestOptions?: Record<string, any>): Promise<APIResponse> {
+    switch (httpMethod.toUpperCase()) {
+      case 'GET':
+        return await this.request.get(endpointURL, requestOptions);
+      case 'POST':
+        return await this.request.post(endpointURL, requestOptions);
+      case 'PUT':
+        return await this.request.put(endpointURL, requestOptions);
+      case 'DELETE':
+        return await this.request.delete(endpointURL, requestOptions);
+      default:
+        throw new Error(`Unknown request type: ${httpMethod}`);
+    }
   }
 
   
-  async sendHttpRequestAsType(myRequestType: string, myEndpointURL:string): Promise<APIResponse> {
-      switch (myRequestType.toUpperCase()) {
-    case 'GET':
-      return await this.request.get(myEndpointURL);
-      break;
-    case 'POST':
-      return await this.request.post(myEndpointURL);
-      break;
-    case 'PUT':
-      return await this.request.put(myEndpointURL);
-      break;
-    case 'DELETE':
-      return await this.request.delete(myEndpointURL);
-      break;
-    default:
-      throw new Error(`Unknown request type: ${myRequestType}`);
-      }
-  }
-
   /**
-  * constructs the full API endpoint url for the provided path
-  * @param myPath - the path without the base URL (ex. /wp-json/wp/v2/posts)
-  * @return - the full url (baseURL + path)
+   * constructs the full endpoint url for the provided path using BASE_URL from the environment file
+   * @param path - the path without the base URL (ex. /wp-json/wp/v2/posts)
+   * @return - the full url (BASE_URL + path)
   */
-  async constructEndpointURL(myPath: string) {
-    return EnvFileReader.getProperty("BASE_URL") + myPath;
+  public constructEndpointURL(path: string) {
+    return EnvFileReader.getProperty("BASE_URL") + path;
   }
     
     
-    }
+}
