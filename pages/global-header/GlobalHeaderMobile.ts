@@ -1,4 +1,4 @@
-import { Locator } from '@playwright/test';
+import { Locator, test } from '@playwright/test';
 import { GlobalHeaderBase } from './GlobalHeaderBase';
 
 
@@ -24,8 +24,11 @@ export class GlobalHeaderMobile extends GlobalHeaderBase {
   ///////////////
 
     async tapUserAvatarImage(): Promise<void> {
-      await this.avatarImage.tap();
-      this.expectProfileFlyoutMenuToBeVisible();
+      await test.step(`Tap User avatar image`, async () => {
+        await this.avatarImage.tap();
+        this.expectProfileFlyoutMenuToBeVisible();
+      });         
+
     }
 
 

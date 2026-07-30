@@ -1,4 +1,4 @@
-import { APIRequestContext, APIResponse } from '@playwright/test';
+import { APIRequestContext, APIResponse, test } from '@playwright/test';
 import { EnvFileReader } from '../utils/EnvFileReader';
 
 
@@ -39,15 +39,16 @@ export class ApiBase {
    * Can also be used for requests without any payload
    * Automatically serializes payload to JSON and parses response as JSON
    */
-  public async sendHttpRequestJson<T = any>(httpMethod: string, path: string, payload?: Record<string, any>): Promise<ApiResponseData<T>> {
-    
-    const requestOptions = payload ? { data: payload } : undefined;
-    const response = await this.sendHttpRequestAsType(httpMethod, path, requestOptions);
+  public async sendJsonRequest<T = any>(httpMethod: string, path: string, payload?: Record<string, any>): Promise<ApiResponseData<T>> {
+    return await test.step(`Send Json request ${httpMethod.toUpperCase()} ${path}`, async () => {
+      const requestOptions = payload ? { data: payload } : undefined;
+      const response = await this.sendHttpRequestAsType(httpMethod, path, requestOptions);
 
-    return {
-      statusCode: response.status(),
-      responseData: await response.json(),
-    };
+      return {
+        statusCode: response.status(),
+        responseData: await response.json(),
+      };
+    });      
   }  
 
 
@@ -55,14 +56,14 @@ export class ApiBase {
    * For legacy Wordpress endpoints (ex. /wp-login.php) that have a Form Data payload (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
    * Always returns raw text/HTML
    */
-  public async sendHttpRequestFormData(httpMethod: string, path: string, formData: Record<string, string>): Promise<ApiResponseData<string>> {
-    
-    const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: formData });
-
-    return {
-      statusCode: response.status(),
-      responseData: await response.text(),
-    };
+  public async sendFormDataRequest(httpMethod: string, path: string, formData: Record<string, string>): Promise<ApiResponseData<string>> {
+    return await test.step(`Send Form Data request ${httpMethod.toUpperCase()} ${path}`, async () => {
+      const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: formData });
+      return {
+        statusCode: response.status(),
+        responseData: await response.text(),
+      };
+    });        
   }
 
 

@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { EnvFileReader } from '../utils/EnvFileReader';
 import { fillSecret } from '../utils/SecureActions';
 
@@ -37,42 +37,53 @@ export class LoginPageBase {
   ///////////////
 
   async goToLoginPage(): Promise<void> {
-    await this.page.goto('/wp-login.php');
+    await test.step(`Go to Login Page`, async () => {
+      await this.page.goto('/wp-login.php');
+    });      
   }
 
   async expectLoginPageToBeVisible(): Promise<void> {
-    await this.page.waitForLoadState('networkidle');
-    await expect(this.logInFormContainer).toBeVisible();
+    await test.step(`Verify Login Page is visible`, async () => {
+      await this.page.waitForLoadState('networkidle');
+      await expect(this.logInFormContainer).toBeVisible();
+    });    
+
   }
 
     /**
    * Input text in Username Email input field (fillSecret will mask text in logs)
-   * @param myText - text to input
+   * @param text - text to input
    */
-  async inputTextInUsernameEmailField(myText: string): Promise<void> {
-    const username = EnvFileReader.getProperty(myText);
+  async inputTextInUsernameEmailField(text: string): Promise<void> {
+    const username = EnvFileReader.getProperty(text);
     await fillSecret(this.usernameEmailInput, username);
   }  
 
   /**
    * Input text in Password input field (fillSecret will mask text in logs)
-   * @param myText - text to input
+   * @param text - text to input
    */
-  async inputTextInPasswordField(myText: string): Promise<void> {
-    const password = EnvFileReader.getProperty(myText);
+  async inputTextInPasswordField(text: string): Promise<void> {
+    const password = EnvFileReader.getProperty(text);
     await fillSecret(this.passwordInput, password);
   }   
 
-  async expectMessageTextToBeVisible(myText: string): Promise<void> {
-    await expect(this.messageTextBlock.getByText(myText)).toBeVisible();
+  async expectMessageTextToBeVisible(text: string): Promise<void> {
+    await test.step(`Verify message text is visible: ${text}`, async () => {
+      await expect(this.messageTextBlock.getByText(text)).toBeVisible();
+    });         
   }
 
   async clickLogInButton(): Promise<void> {
-    await this.logInButton.click();
+    await test.step(`Click Log In button`, async () => {
+      await this.logInButton.click();
+    });    
   }   
 
   async clickLostYourPasswordLink(): Promise<void> {
-    await this.lostYourPasswordLink.click();
+    await test.step(`Click Lost Your Password link`, async () => {
+      await this.lostYourPasswordLink.click();
+    }); 
   }   
 
 

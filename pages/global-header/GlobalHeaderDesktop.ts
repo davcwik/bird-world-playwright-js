@@ -1,4 +1,4 @@
-import { Locator } from '@playwright/test';
+import { Locator, test } from '@playwright/test';
 import { GlobalHeaderBase } from './GlobalHeaderBase';
 
 
@@ -28,8 +28,10 @@ export class GlobalHeaderDesktop extends GlobalHeaderBase {
   * Verify the Flyout Menu is visible
   */
   async hoverOverUserAvatarImage(): Promise<void> {
-    await this.avatarImage.hover();
-    this.expectProfileFlyoutMenuToBeVisible();
+    await test.step(`Hover over User avatar image`, async () => {
+      await this.avatarImage.hover();
+      this.expectProfileFlyoutMenuToBeVisible();
+    });      
   }
 
 

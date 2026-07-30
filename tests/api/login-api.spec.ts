@@ -14,7 +14,7 @@ test.describe('API - Login', { tag: ['@platform-api', '@feature-login'] }, () =>
     };
 
     // send request and verify response
-    const response = await apiBase.sendHttpRequestFormData("POST", "/wp-login.php", loginFormData);
+    const response = await apiBase.sendFormDataRequest("POST", "/wp-login.php", loginFormData);
     expect([200]).toContain(response.statusCode);
 
   }); // end test
