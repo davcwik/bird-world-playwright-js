@@ -38,8 +38,12 @@ export class ApiBase {
    * Send REST JSON API requests (GET, POST, PUT, DELETE)
    * Can also be used for requests without any payload
    * Automatically serializes payload to JSON and parses response as JSON
+   * @param httpMethod - GET, POST, etc.
+   * @param path - endpoint path (do not include domain)
+   * @param payload - JSON payload
+   * @returns - response data and status code
    */
-  public async sendJsonRequest<T = any>(httpMethod: string, path: string, payload?: Record<string, any>): Promise<ApiResponseData<T>> {
+  public async sendJsonHttpRequest<T = any>(httpMethod: string, path: string, payload?: Record<string, any>): Promise<ApiResponseData<T>> {
     return await test.step(`Send Json request ${httpMethod.toUpperCase()} ${path}`, async () => {
       const requestOptions = payload ? { data: payload } : undefined;
       const response = await this.sendHttpRequestAsType(httpMethod, path, requestOptions);
@@ -55,10 +59,14 @@ export class ApiBase {
   /**
    * For legacy Wordpress endpoints (ex. /wp-login.php) that have a Form Data payload (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
    * Always returns raw text/HTML
+   * @param httpMethod - GET, POST, etc.
+   * @param path - endpoint path (do not include domain)
+   * @param payload - Form Data payload
+   * @returns - response data and status code
    */
-  public async sendFormDataRequest(httpMethod: string, path: string, formData: Record<string, string>): Promise<ApiResponseData<string>> {
+  public async sendFormDataHttpRequest(httpMethod: string, path: string, payload: Record<string, string>): Promise<ApiResponseData<string>> {
     return await test.step(`Send Form Data request ${httpMethod.toUpperCase()} ${path}`, async () => {
-      const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: formData });
+      const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: payload });
       return {
         statusCode: response.status(),
         responseData: await response.text(),
@@ -73,7 +81,7 @@ export class ApiBase {
    * @param endpointURL - full url including domain (https://example.com/login)
    * @param requestOptions - Optional Playwright request configuration object. Can contain:
    *  - `data`: JSON body payload for REST endpoints
-   *  - `form`: Form Data (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
+   *  - `form`: Form Data payload (Form-encoded key-value pairs (`application/x-www-form-urlencoded`))
    *  - `headers`: Custom HTTP headers (e.g., authorization tokens)
    *  - `params`: URL query string parameters
    *  - `timeout`: Request timeout in milliseconds
