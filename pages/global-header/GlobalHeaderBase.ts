@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 
 export abstract class GlobalHeaderBase {
@@ -29,12 +29,16 @@ export abstract class GlobalHeaderBase {
   // FUNCTIONS //
   ///////////////
 
-  async expectProfileFlyoutMenuToBeVisible() {
-    await expect(this.profileFlyoutMenu).toBeVisible();
+  async expectProfileFlyoutMenuToBeVisible(): Promise<void> {
+    await test.step(`Verify Profile flyout menu is visible`, async () => {
+      await expect(this.profileFlyoutMenu).toBeVisible();
+    });  
   }
 
-  async clickLogOutButton() {
-    await this.logOutButton.click();
+  async clickLogOutButton(): Promise<void> {
+    await test.step(`Click Log Out button`, async () => {
+      await this.logOutButton.click();
+    });  
   }
 
 

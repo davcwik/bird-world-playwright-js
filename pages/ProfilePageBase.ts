@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 export class ProfilePageBase {
 
@@ -24,9 +24,11 @@ export class ProfilePageBase {
   // FUNCTIONS //
   ///////////////
 
-  async expectProfilePageToBeVisible() {
-    await this.page.waitForLoadState('networkidle');
-    await expect(this.profileForm).toBeVisible();
+  async expectProfilePageToBeVisible(): Promise<void> {
+    await test.step(`Verify Profile Page is visible`, async () => {
+      await this.page.waitForLoadState('networkidle');
+      await expect(this.profileForm).toBeVisible();
+    });       
   }
 
 
