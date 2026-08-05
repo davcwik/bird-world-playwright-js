@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import execute_values
+from datetime import datetime, timezone
 
 
 #####################################################
@@ -48,124 +49,208 @@ load_dotenv(dotenv_path=env_path)
 print(f"Successfully loaded environment configuration from: {env_filename}")
 
 
-# ------------------------------------------------------------------
-# DATABASE CONFIGURATION
-# ------------------------------------------------------------------
+############################
+## DATABASE CONFIGURATION ##
+############################
+
 DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT", "5432"),
+    "db_name": os.getenv("DB_NAME"),
+    "db_user": os.getenv("DB_USER"),
+    "db_password": os.getenv("DB_PASSWORD"),
+    "db_host": os.getenv("DB_HOST"),
+    "db_port": os.getenv("DB_PORT"),
 }
 
-# 6. Verify all required database keys were populated from the env file
-required_keys = ["dbname", "user", "password", "host"]
+# verify keys are populated from the env file
+required_keys = ["db_name", "db_user", "db_password", "db_host", "db_port"]
 missing_keys = [key for key in required_keys if not DB_CONFIG[key]]
 
 if missing_keys:
     print(
-        f"CRITICAL CONFIG ERROR: Missing database variables in {env_filename}: "
+        f"ERROR: Missing database variables in {env_filename}: "
         f"{', '.join(missing_keys)}"
     )
     sys.exit(1)
 
 
-##################################
-## PARSE RESULTS AND SAVE TO DB ##
-##################################    
+def parse_and_save_playwright_results():
 
-JSON_REPORT_PATH = "results.json"
+    #############################################
+    ## EXTRACT TEST RUN DATA FROM RESULTS JSON ##
+    #############################################
 
-def parse_and_log_results():
-    if not os.path.exists(JSON_REPORT_PATH):
-        print(f"Error: {JSON_REPORT_PATH} not found.")
+    # initialize variables with default values for a "no tests run" scenario
+    total_tests = 0
+    passed_tests = 0
+    failed_tests = 0
+    execution_time_ms = 0
+    overall_result = "NO TESTS RUN"
+    started_at_utc = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S') # Fallback to current utc time if file is empty
+
+    json_file_path = "results.json"
+
+    if not os.path.exists(json_file_path):
+        print(f"ERROR: Expected test results file not found at '{json_file_path}'.")
         sys.exit(1)
 
-    with open(JSON_REPORT_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    # with open(json_file_path, "r", encoding="utf-8") as f:
+        # data = json.load(f)
 
-    ###########################
-    ### parse test run data ###
-    ###########################
+    json_data = []
+    if os.path.exists(json_file_path) and os.path.getsize(json_file_path) > 0:
+        with open(json_file_path, 'r') as file:
+            try:
+                json_data = json.load(file)
+            except json.JSONDecodeError:
+                print("ERROR: Failed to parse results.json file. File might be corrupted or empty.")
+                sys.exit(1)        
 
-    stats = data.get("stats", {})
+    json_results = json_data.get("stats", {})
+
+    # get started_at datetime
+    # raw_timestamp = json_results.get("stats", {}).get("startTime") # ex. "2026-06-12T18:25:00.123Z"
+    # raw_timestamp = json_results.get("startTime") # ex. "2026-06-12T18:25:00.123Z"
+    # if raw_timestamp:
+    #     utc_dt = datetime.fromisoformat(raw_timestamp.replace("Z", "+00:00")) # Convert to format (YYYY-MM-DD HH:MM:SS), replace 'Z' with UTC offset
+    #     started_at_utc = utc_dt.strftime('%Y-%m-%d %H:%M:%S') 
+    #     print(f"Test run start time is {started_at_utc} UTC")
+    # else:
+    #     # Fallback to current UTC time if not found in JSON
+    #     started_at_utc = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+
+    # extract start time
+    # if json_results is empty, we skip parsing and keep our default "NO TESTS RUN" values
+    # otherwise extract the start timestamp
+    if not json_results:
+        print(f"Notice: No results discovered in {json_file_path}. Processing as an empty run.")
+    else:
+        try:
+            raw_timestamp = json_results.get("startTime") # ex. "2026-06-12T18:25:00.123Z"
+            utc_dt = datetime.fromisoformat(raw_timestamp.replace("Z", "+00:00")) # Convert to format (YYYY-MM-DD HH:MM:SS), replace 'Z' with UTC offset
+            started_at_utc = utc_dt.strftime('%Y-%m-%d %H:%M:%S')
+            print(f"Test run start time is {started_at_utc} UTC")
+        except (IndexError, KeyError) as e:
+            print(f"Error parsing timestamp from results.json file: {e}")
+            raise # Fallback or exit if the JSON is empty/malformed
+
+
+    # extract tests statuses
+    passed_tests = json_results.get("expected")
+    failed_tests = json_results.get("unexpected")
+    total_tests = passed_tests + failed_tests
+    if total_tests == 0:
+        overall_result = "NO TESTS RUN"
+    elif failed_tests > 0:
+        overall_result = "FAILED"
+    else:
+        overall_result = "PASSED"
+
+    # extract execution time
+    execution_time_ms = None # will save as Null in the db if does not meet criteria for if-loop below
+    if execution_time_ms is not None:
+        execution_time_ms = int(json_results.get("duration", 0))
+
+
+    ########################################
+    ## EXTRACT DATA FROM OS ENV VARIABLES ##
+    ########################################
+
     environment = os.getenv("TEST_ENV")
     browser = os.getenv("BROWSER")
-    ci_build = os.getenv("GITHUB_RUN_NUMBER", "Local Run")
+    github_job_name = os.getenv("GITHUB_JOB_NAME")
+    github_build_number = os.getenv("GITHUB_RUN_NUMBER")
+    playwright_tags = os.getenv("TEST_RUN_TAGS")
+    print("Browser: " + browser)
+    print("Environment: " + environment)
+    print("Github Job Name: " + github_job_name)
+    print("Github Build Number: " + github_build_number)
+    print("Playwright Tags: " + playwright_tags)
 
-    passed_count = stats.get("expected", 0)
-    failed_count = stats.get("unexpected", 0)
-    skipped_count = stats.get("skipped", 0)
-    total_tests = passed_count + failed_count + skipped_count
-    run_status = "PASSED" if failed_count == 0 else "FAILED"
 
-    # Convert start time / duration (Playwright outputs duration in ms)
-    duration_seconds = int(stats.get("duration", 0) / 1000)
-
+    ######################
+    ## SAVE TO DATABASE ##
+    ######################
     try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cursor = conn.cursor()
+        connection = psycopg2.connect(**DB_CONFIG)
+        cursor = connection.cursor()
 
-        # -------------------------------------------------------------
-        # Step A: Insert into test_runs
-        # -------------------------------------------------------------
-        insert_run_query = """
+        ##########################
+        ### SAVE TEST RUN DATA ###
+        ##########################
+
+        test_run_query = """
             INSERT INTO test_runs (
-                environment, browser, ci_build_number, total_tests, 
-                passed_tests, failed_tests, skipped_tests, status, duration_seconds
+                browser, environment, github_job_name, github_build_number, playwright_tags,
+                total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms
             ) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) 
-            RETURNING id;
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
         """
-        cursor.execute(
-            insert_run_query,
-            (
-                environment,
-                browser,
-                ci_build,
-                total_tests,
-                passed_count,
-                failed_count,
-                skipped_count,
-                run_status,
-                duration_seconds,
-            ),
+
+        test_run_data = (
+            browser, environment, github_job_name, github_build_number, playwright_tags,
+            total_tests, passed_tests, failed_tests, overall_result,
+            started_at_utc, execution_time_ms
         )
-        test_run_id = cursor.fetchone()[0]
-        print(f"Successfully created test_run record with ID: {test_run_id}")
+        # cursor.execute(
+        #     test_run_data,
+        #     (
+        #         browser,
+        #         environment,
+        #         github_job_name,
+        #         github_build_number,
+        #         playwright_tags,
+        #         total_tests,
+        #         passed_tests,
+        #         failed_tests,
+        #         overall_result,
+        #         started_at_utc,
+        #         execution_time_ms,
+        #     ),
+        # )
 
-        # -------------------------------------------------------------
-        # Step B: Traverse suites and insert into test_results & test_step_results
-        # -------------------------------------------------------------
-        suites = data.get("suites", [])
+        try:
+            cursor.execute(test_run_query, test_run_data)
+            connection.commit()
+        except Exception as e:
+            connection.rollback()
+            print(f"An error occurred while saving test run data to database: {e}")
+
+        test_run_id = cursor.lastrowid # save for later
+        print(f"Successfully saved Test Run data to database. Proceeding with saving of Test Case results and Failed Step data...")
+
+
+        #########################################################
+        ### SAVE TEST CASE RESULTS and TEST STEP RESULTS DATA ###
+        #########################################################
         
-        for suite in suites:
-            process_suite(cursor, suite, test_run_id)
+        # json_suites = json_data.get("suites", [])
+        
+        # for suite in json_suites:
+        #     process_suite(cursor, suite, test_run_id)
 
-        conn.commit()
-        print("All test execution data successfully logged to PostgreSQL!")
+        # connection.commit()
+        # print("All test execution data successfully logged to PostgreSQL!")
 
     except Exception as e:
-        if 'conn' in locals() and conn:
-            conn.rollback()
+        if 'conn' in locals() and connection:
+            connection.rollback()
         print(f"Database insertion failed: {e}")
         sys.exit(1)
     finally:
         if 'cursor' in locals() and cursor:
             cursor.close()
-        if 'conn' in locals() and conn:
-            conn.close()
+        if 'conn' in locals() and connection:
+            connection.close()
 
 
 def process_suite(cursor, suite, test_run_id, spec_file=None):
     """Recursively parses Playwright suites, specs, and nested steps."""
     # Playwright root suite has file path in location/title
-    current_file = suite.get("file") or spec_file or suite.get("title", "")
+    current_spec_file = suite.get("file")
 
     # Process spec entries in this suite
     for spec in suite.get("specs", []):
-        spec_file_name = current_file
+        suite_name = suite["suites"][0]["title"]
         test_name = spec.get("title", "")
         tags_list = spec.get("tags", [])
         tags_str = ",".join(tags_list) if tags_list else None
@@ -183,14 +268,14 @@ def process_suite(cursor, suite, test_run_id, spec_file=None):
             # Insert into test_results
             insert_test_query = """
                 INSERT INTO test_results (
-                    test_run_id, spec_file_name, test_name, status, duration_seconds, tags
+                    test_run_id, suite_name, test_name, status, duration_seconds, tags
                 ) 
                 VALUES (%s, %s, %s, %s, %s, %s) 
                 RETURNING id;
             """
             cursor.execute(
                 insert_test_query,
-                (test_run_id, spec_file_name, test_name, status, duration_sec, tags_str),
+                (test_run_id, suite_name, test_name, status, duration_sec, tags_str),
             )
             test_result_id = cursor.fetchone()[0]
 
@@ -200,7 +285,7 @@ def process_suite(cursor, suite, test_run_id, spec_file=None):
 
     # Recurse through nested suites (e.g. test.describe blocks)
     for child_suite in suite.get("suites", []):
-        process_suite(cursor, child_suite, test_run_id, current_file)
+        process_suite(cursor, child_suite, test_run_id, current_spec_file)
 
 
 def parse_and_insert_steps(cursor, test_result_id, steps):
@@ -247,5 +332,9 @@ def parse_and_insert_steps(cursor, test_result_id, steps):
         execute_values(cursor, insert_steps_query, step_records)
 
 
+def main():
+    parse_and_save_playwright_results()
+
+
 if __name__ == "__main__":
-    parse_and_save_playwright_results.py()
+    main()

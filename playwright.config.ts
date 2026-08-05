@@ -11,7 +11,7 @@ const environment = process.env.ENV || 'production';
 
 // verify that the ENV variable was passed
 if (!environment) {
-  throw new Error("CRITICAL CONFIG ERROR: The ENV environment variable is not set.");
+  throw new Error("ERROR: The ENV environment variable is not set.");
 }
 
 // construct the path for the decrypted .env file
@@ -19,7 +19,7 @@ const envFilePath = path.resolve(__dirname, `.env.${environment}`);
 
 // if the file does not exist, end the run
 if (!fs.existsSync(envFilePath)) {
-  throw new Error(`CRITICAL CONFIG ERROR: Environment file not found at expected path: "${envFilePath}". Ensure decryption step completed successfully.`);
+  throw new Error(`ERROR: Environment file not found at expected path: "${envFilePath}". Ensure decryption step completed successfully.`);
 }
 
 // load the file
@@ -35,28 +35,43 @@ dotenv.config({ path: envFilePath });
  */
 export default defineConfig({
   testDir: './tests',
+  
   /* Run tests in files in parallel */
   fullyParallel: true,
+  
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
+  
   /* Retry on CI only */
   retries: 0,
+  
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'results.json' }],
+    ['junit', { outputFile: 'results.xml' }]
+  ],
+  
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: process.env.BASE_URL,
+
     /* Collect trace and screenshot */
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+
     // Delays every browser action by X ms to mimic human behavior
     launchOptions: {
       slowMo: 500, 
     },
+
   },
+
 
   /////////////////////
   // BROWSER CONFIGS //
