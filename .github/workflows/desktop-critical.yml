@@ -49,7 +49,7 @@ jobs:
           YML_FILENAME="${WORKFLOW_FILE_PATH##*/}"      # final value is only file name ex. "desktop_tests.yml"
 
           # get the test run's Playwright tags
-          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
+          TEST_RUN_TAGS="@platform-desktop @priority-critical"
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
