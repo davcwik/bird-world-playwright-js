@@ -57,7 +57,7 @@ jobs:
 
           # launch test run
           # npx playwright test --grep "$TEST_RUN_TAGS"
-        run: npx playwright test --grep "@platform-desktop.*@priority-critical""
+        run: npx playwright test --grep "@platform-desktop.*@priority-critical"
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
