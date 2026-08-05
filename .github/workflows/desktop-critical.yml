@@ -41,8 +41,8 @@ jobs:
       - name: Run Desktop Critical Tests
         env:
           ENV: ${{ inputs.environment }}  
-        run: npx playwright test --grep "@platform-desktop" --grep "@priority-critical" --project="Github Chrome (Chromium)"
-
+        run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)" --project="Github Chrome (Chromium)"  
+        #run: npx playwright test --grep "@platform-desktop" --grep "@priority-critical" --project="Github Chrome (Chromium)"
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
