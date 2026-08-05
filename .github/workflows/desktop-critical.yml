@@ -41,7 +41,23 @@ jobs:
       - name: Run Desktop Critical Tests
         env:
           ENV: ${{ inputs.environment }}  
-        run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)" --project="Github Chrome (Chromium)"  
+        #run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)" --project="Github Chrome (Chromium)"  
+        run: |
+
+          # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
+          WORKFLOW_REF="${{ github.workflow_ref }}"
+          WORKFLOW_FILE_PATH="${WORKFLOW_REF%@*}"       # Remove '@refs/heads/main'
+          YML_FILENAME="${WORKFLOW_FILE_PATH##*/}"      # final value is only file name ex. "desktop_tests.yml"
+
+          # get the test run's Playwright tags
+          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
+
+          # save to system variables that can be accessed later
+          echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
+          echo "GITHUB_JOB_NAME=$YML_FILENAME" >> $GITHUB_ENV
+
+          # launch test run
+          npx playwright test --grep "$TEST_RUN_TAGS" --project="Github Chrome (Chromium)"
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
