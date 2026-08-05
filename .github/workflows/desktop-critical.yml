@@ -41,7 +41,7 @@ jobs:
       - name: Run Desktop Critical Tests
         env:
           ENV: ${{ inputs.environment }}  
-        run: |
+        #run: |
 
           # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
           # WORKFLOW_REF="${{ github.workflow_ref }}"
@@ -57,7 +57,7 @@ jobs:
 
           # launch test run
           # npx playwright test --grep "$TEST_RUN_TAGS"
-          npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)"
+        run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)"
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
