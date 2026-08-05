@@ -41,6 +41,15 @@ jobs:
       - name: Run Desktop Critical Tests
         env:
           ENV: ${{ inputs.environment }}  
+        run: npx playwright test --grep "@platform-desktop" --grep "@priority-critical"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
         #run: |
 
           # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
@@ -56,12 +65,4 @@ jobs:
           # echo "GITHUB_JOB_NAME=$YML_FILENAME" >> $GITHUB_ENV
 
           # launch test run
-          # npx playwright test --grep "$TEST_RUN_TAGS"
-        run: npx playwright test --grep "@platform-desktop.*@priority-critical|@priority-critical.*@platform-desktop"
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          # npx playwright test --grep "$TEST_RUN_TAGS"          
