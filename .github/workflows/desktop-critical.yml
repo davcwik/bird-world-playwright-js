@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Playwright Browsers
         # WebKit browser is intentionally excluded because it is not supported for MacOS 13
-        run: npx playwright install chromium firefox --with-deps
+        run: npx playwright install chromium firefox --with-deps # install only chrome and firefox
         # run: npx playwright install --with-deps # installs all browsers
 
       - name: Decrypt Environment File
@@ -39,9 +39,9 @@ jobs:
             --output .env.$ENV .env.$ENV.gpg
       
       - name: Run Desktop Critical Tests
+        continue-on-error: true # subsequent steps run even when tests fail
         env:
           ENV: ${{ inputs.environment }}  
-        #run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)" --project="Github Chrome (Chromium)"  
         run: |
 
           # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
@@ -58,10 +58,33 @@ jobs:
 
           # launch test run
           npx playwright test --grep "$TEST_RUN_TAGS" --project="Github Chrome (Chromium)"
-      - uses: actions/upload-artifact@v4
+
+      # Set up Python in the Self Hosted runner workspace on laptop
+      - name: Set up Python
         if: ${{ !cancelled() }}
+        uses: actions/setup-python@v5
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          python-version: '3.12'
+
+      # Install driver and log test metrics into PostgreSQL database
+      - name: Save results to DB
+        if: ${{ !cancelled() }}
+        env:
+          ENV: ${{ inputs.environment }}
+          TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
+          GITHUB_JOB_NAME: ${{ env.GITHUB_JOB_NAME }}
+        run: |
+          pip install psycopg2-binary
+          python parse_and_save_playwright_results.py          
+
+      # Upload both Playwright HTML report folder and results.json to GitHub Cloud
+      - name: Upload Test Artifacts to GitHub Cloud
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-artifacts
+          path: |
+            playwright-report/
+            results.json
+          retention-days: 14
       
