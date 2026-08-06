@@ -223,7 +223,7 @@ def parse_and_save_playwright_results():
             process_suite(cursor, suite, test_run_id)
 
         connection.commit()
-        print("All test execution data successfully logged to PostgreSQL!")
+        print("All test execution data successfully logged to database.")
 
     except Exception as e:
         if 'conn' in locals() and connection:
