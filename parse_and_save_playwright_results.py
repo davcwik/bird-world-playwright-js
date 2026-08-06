@@ -160,11 +160,11 @@ def parse_and_save_playwright_results():
     github_job_name = os.getenv("GITHUB_JOB_NAME")
     github_build_number = os.getenv("GITHUB_RUN_NUMBER")
     playwright_tags = os.getenv("TEST_RUN_TAGS")
-    print("Environment: " {environment})
-    print("Browser: " {browser})
-    print("Github Job Name : " {github_job_name})
-    print("Github Build Number: " {github_build_number})
-    print("Playwright Tags: " {playwright_tags})
+    print(f"Environment: {environment}")
+    print(f"Browser: {browser}")
+    print(f"Github Job Name : {github_job_name}")
+    print(f"Github Build Number: {github_build_number}")
+    print(f"Playwright Tags: {playwright_tags}")
 
 
     ######################
