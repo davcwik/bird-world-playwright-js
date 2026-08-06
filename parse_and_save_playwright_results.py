@@ -185,7 +185,7 @@ def parse_and_save_playwright_results():
                 total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms
             ) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
-            RETURNING test_run_id;
+            RETURNING id;
         """
 
         test_run_data = (
