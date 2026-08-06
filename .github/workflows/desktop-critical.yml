@@ -81,7 +81,8 @@ jobs:
           TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
           GITHUB_JOB_NAME: ${{ env.GITHUB_JOB_NAME }}
         run: |
-          python3 -m pip install psycopg2-binary python-dotenv
+          source .venv/bin/activate
+          pip install psycopg2-binary python-dotenv
           python parse_and_save_playwright_results.py          
 
       - name: Upload Test Artifacts to GitHub Cloud
