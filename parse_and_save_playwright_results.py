@@ -45,7 +45,7 @@ if not env_path.exists():
     sys.exit(1)
 
 # load environment variables
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 print(f"Successfully loaded environment configuration from: {env_filename}")
 
 
@@ -155,7 +155,7 @@ def parse_and_save_playwright_results():
     ## EXTRACT DATA FROM OS ENV VARIABLES ##
     ########################################
 
-    environment = os.getenv("TEST_ENV")
+    environment = os.getenv("ENV")
     browser = os.getenv("BROWSER")
     github_job_name = os.getenv("GITHUB_JOB_NAME")
     github_build_number = os.getenv("GITHUB_RUN_NUMBER")
