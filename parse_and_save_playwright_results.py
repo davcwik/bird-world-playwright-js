@@ -54,11 +54,11 @@ print(f"Successfully loaded environment configuration from: {env_filename}")
 ############################
 
 DB_CONFIG = {
-    "db_name": os.getenv("DB_NAME"),
-    "db_user": os.getenv("DB_USER"),
-    "db_password": os.getenv("DB_PASSWORD"),
-    "db_host": os.getenv("DB_HOST"),
-    "db_port": os.getenv("DB_PORT"),
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT"),
 }
 
 # verify keys are populated from the env file
@@ -191,32 +191,24 @@ def parse_and_save_playwright_results():
             total_tests, passed_tests, failed_tests, overall_result,
             started_at_utc, execution_time_ms
         )
-        # cursor.execute(
-        #     test_run_data,
-        #     (
-        #         browser,
-        #         environment,
-        #         github_job_name,
-        #         github_build_number,
-        #         playwright_tags,
-        #         total_tests,
-        #         passed_tests,
-        #         failed_tests,
-        #         overall_result,
-        #         started_at_utc,
-        #         execution_time_ms,
-        #     ),
-        # )
+
+        test_run_id = None
 
         try:
             cursor.execute(test_run_query, test_run_data)
+            test_run_id = cursor.fetchone()[0] # save for later
             connection.commit()
         except Exception as e:
             connection.rollback()
             print(f"An error occurred while saving test run data to database: {e}")
 
-        test_run_id = cursor.lastrowid # save for later
-        print(f"Successfully saved Test Run data to database. Proceeding with saving of Test Case results and Failed Step data...")
+        if test_run_id:
+            # Continue saving child test results linked to this test_run_id
+            print(f"Successfully saved Test Run data to database (ID: {test_run_id}). Proceeding with saving of Test Case results and Failed Step data...")
+        else:
+            print("Skipping scenario insertion because test_run_id was not generated.")
+
+
 
 
         #########################################################
