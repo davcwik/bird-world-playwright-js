@@ -146,9 +146,10 @@ def parse_and_save_playwright_results():
         overall_result = "PASSED"
 
     # extract execution time
-    execution_time_ms = None # will save as Null in the db if does not meet criteria for if-loop below
-    if execution_time_ms is not None:
+    if "duration" in json_results:
         execution_time_ms = int(json_results.get("duration", 0))
+    else:
+        execution_time_ms = None
 
 
     ########################################
@@ -184,6 +185,7 @@ def parse_and_save_playwright_results():
                 total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms
             ) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+            RETURNING test_run_id;
         """
 
         test_run_data = (
