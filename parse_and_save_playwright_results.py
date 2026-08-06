@@ -62,7 +62,7 @@ DB_CONFIG = {
 }
 
 # verify keys are populated from the env file
-required_keys = ["db_name", "db_user", "db_password", "db_host", "db_port"]
+required_keys = ["dbname", "user", "password", "host", "port"]
 missing_keys = [key for key in required_keys if not DB_CONFIG[key]]
 
 if missing_keys:
