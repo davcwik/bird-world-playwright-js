@@ -51,20 +51,24 @@ jobs:
 
           # get the test run's Playwright tags
           TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
+          PLAYWRIGHT_PROJECT="Github Chrome (Chromium)"
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
           echo "GITHUB_JOB_NAME=$YML_FILENAME" >> $GITHUB_ENV
+          echo "BROWSER=$PLAYWRIGHT_PROJECT" >> $GITHUB_ENV
 
           # launch test run
-          npx playwright test --grep "$TEST_RUN_TAGS" --project="Github Chrome (Chromium)" 
+          npx playwright test --grep "$TEST_RUN_TAGS" --project="$PLAYWRIGHT_PROJECT" 
       
       - name: Save results to DB
         if: ${{ !cancelled() }}
         env:
           ENV: ${{ inputs.environment }}
-          TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
+          BROWSER: ${{ env.BROWSER }}
           GITHUB_JOB_NAME: ${{ env.GITHUB_JOB_NAME }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
         run: |
           source /Users/david/Documents/automation/work/bird-world-playwright-js/.venv/bin/activate
           python parse_and_save_playwright_results.py          
