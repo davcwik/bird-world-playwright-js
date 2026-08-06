@@ -217,13 +217,13 @@ def parse_and_save_playwright_results():
         ### SAVE TEST CASE RESULTS and TEST STEP RESULTS DATA ###
         #########################################################
         
-        # json_suites = json_data.get("suites", [])
+        json_suites = json_data.get("suites", [])
         
-        # for suite in json_suites:
-        #     process_suite(cursor, suite, test_run_id)
+        for suite in json_suites:
+            process_suite(cursor, suite, test_run_id)
 
-        # connection.commit()
-        # print("All test execution data successfully logged to PostgreSQL!")
+        connection.commit()
+        print("All test execution data successfully logged to PostgreSQL!")
 
     except Exception as e:
         if 'conn' in locals() and connection:
