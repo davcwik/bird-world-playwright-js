@@ -238,21 +238,17 @@ def parse_and_save_playwright_results():
 
 def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
-    print("daveloop")
-
     # Playwright root suite has file path in location/title
-    current_spec_file = suite.get("file")
-    print(f"dave1 {suite}")
+    current_spec_file = suite.get("file") or spec_file
+
     # Loop thru suite and save each spec (aka test case) test result
     for spec in suite.get("specs", []):
-        print("dave2")
-        suite_name = suite["suites"][0]["title"] # ex. desktop/login.spec.ts
+        suite_name = suite.get("title") or current_spec_file or spec_file or "Suite Name Not Found" # ex. desktop/login.spec.ts
         test_name = spec.get("title", "") # ex. Login Success and Logout happy path (user email) @priority-critical
         tags_list = spec.get("tags", [])
         tags_str = ",".join(tags_list) if tags_list else None # ex. "@platform-desktop,@feature-login,@priority-critical"
 
         for test in spec.get("tests", []):
-            print(f"dave1 {test}")
             results = test.get("results", [])
             if not results:
                 continue
@@ -273,13 +269,15 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
             test_case_data = (test_run_id, suite_name, test_name, status, duration_sec, tags_str)
 
+            test_result_id = None
+
             try:
-                print("dave try");
                 cursor.execute(test_case_query, test_case_data)
                 test_result_id = cursor.fetchone()[0] # save for later
             except Exception as e:
                 connection.rollback()
-                print(f"An error occurred while saving test suite data to database: {e}")
+                print(f"An error occurred while saving test result for test case '{test_name}': {e}")
+                continue # skip step processing if inserting the test case failed
             
 
             # Parse steps (including user test.step blocks inside Page Objects)
@@ -288,7 +286,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
     # Recurse through nested suites (e.g. test.describe blocks)s
     for child_suite in suite.get("suites", []):
-        process_suite(cursor, child_suite, test_run_id, current_spec_file)
+        process_suite(cursor, child_suite, test_run_id, connection, current_spec_file)
 
 
 def parse_and_insert_steps(cursor, test_result_id, steps):
