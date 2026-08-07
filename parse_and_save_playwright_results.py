@@ -251,6 +251,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
         tags_str = ",".join(tags_list) if tags_list else None # ex. "@platform-desktop,@feature-login,@priority-critical"
 
         for test in spec.get("tests", []):
+            print("execute")
             results = test.get("results", [])
             if not results:
                 continue
@@ -272,7 +273,6 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
             test_case_data = (test_run_id, suite_name, test_name, status, duration_sec, tags_str)
 
             try:
-                print("execute")
                 cursor.execute(test_case_query, test_case_data)
                 test_result_id = cursor.fetchone()[0] # save for later
             except Exception as e:
