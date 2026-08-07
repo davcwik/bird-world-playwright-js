@@ -29,3 +29,7 @@ env/
 # Python compiled bytecode
 __pycache__/
 *.pyc
+
+# test result files
+results.json
+results.xml

@@ -217,7 +217,9 @@ def parse_and_save_playwright_results():
         ### SAVE TEST CASE RESULTS and TEST STEP RESULTS DATA ###
         #########################################################
         
+        print("dave1")
         json_suites = json_data.get("suites", [])
+        print("dave2")
         
         for suite in json_suites:
             process_suite(cursor, suite, test_run_id)
@@ -238,11 +240,13 @@ def parse_and_save_playwright_results():
 
 
 def process_suite(cursor, suite, test_run_id, spec_file=None):
-    """Recursively parses Playwright suites, specs, and nested steps."""
+
+    print("daveloop")
+    
     # Playwright root suite has file path in location/title
     current_spec_file = suite.get("file")
 
-    # Process spec entries in this suite
+    # Process spec entries (test cases) in this suite
     for spec in suite.get("specs", []):
         suite_name = suite["suites"][0]["title"]
         test_name = spec.get("title", "")
@@ -271,7 +275,8 @@ def process_suite(cursor, suite, test_run_id, spec_file=None):
                 insert_test_query,
                 (test_run_id, suite_name, test_name, status, duration_sec, tags_str),
             )
-            test_result_id = cursor.fetchone()[0]
+
+            test_result_id = cursor.fetchone()[0] # save for later
 
             # Parse steps (including user test.step blocks inside Page Objects)
             raw_steps = last_result.get("steps", [])
