@@ -272,6 +272,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
             test_case_data = (test_run_id, suite_name, test_name, status, duration_sec, tags_str)
 
             try:
+                print("execute")
                 cursor.execute(test_case_query, test_case_data)
                 test_result_id = cursor.fetchone()[0] # save for later
             except Exception as e:
