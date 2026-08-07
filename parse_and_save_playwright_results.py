@@ -242,16 +242,16 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
     # Playwright root suite has file path in location/title
     current_spec_file = suite.get("file")
-
+    print("dave1")
     # Loop thru suite and save each spec (aka test case) test result
     for spec in suite.get("specs", []):
+        print("dave2")
         suite_name = suite["suites"][0]["title"] # ex. desktop/login.spec.ts
         test_name = spec.get("title", "") # ex. Login Success and Logout happy path (user email) @priority-critical
         tags_list = spec.get("tags", [])
         tags_str = ",".join(tags_list) if tags_list else None # ex. "@platform-desktop,@feature-login,@priority-critical"
 
         for test in spec.get("tests", []):
-            print("execute")
             results = test.get("results", [])
             if not results:
                 continue
