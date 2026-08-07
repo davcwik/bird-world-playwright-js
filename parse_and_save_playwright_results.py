@@ -242,7 +242,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
     # Playwright root suite has file path in location/title
     current_spec_file = suite.get("file")
-    print("dave1")
+    print(f"dave1 {suite}")
     # Loop thru suite and save each spec (aka test case) test result
     for spec in suite.get("specs", []):
         print("dave2")
