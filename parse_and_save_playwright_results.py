@@ -282,7 +282,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
             # Parse steps (including user test.step blocks inside Page Objects)
             raw_steps = last_result.get("steps", [])
-            parse_and_insert_steps(cursor, test_result_id, raw_steps)
+            parse_and_insert_failed_steps(cursor, test_result_id, raw_steps)
 
     # Recurse through nested suites (e.g. test.describe blocks)s
     for child_suite in suite.get("suites", []):
