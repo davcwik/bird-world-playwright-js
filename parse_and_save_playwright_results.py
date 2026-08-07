@@ -289,29 +289,30 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
         process_suite(cursor, child_suite, test_run_id, connection, current_spec_file)
 
 
-def parse_and_insert_steps(cursor, test_result_id, steps):
-    """Parses test.step execution nodes and logs them to test_step_results."""
-    step_records = []
+def extract_failed_steps(steps, test_result_id):
+
+    failed_records = []
 
     for step in steps:
-        category = step.get("category", "")
-        # Playwright tags user-defined test.step blocks with category="test.step"
-        if category == "test.step":
-            step_name = step.get("title", "Unnamed Step")
-            step_status = "PASSED" if not step.get("error") else "FAILED"
+
+        # only save if the step has an error (aka has failed)
+        error_obj = step.get("error")
+        if error_obj:
+            step_name = step.get("title", "Step Name not found")
+            step_status = "FAILED"
             
-            # Extract error message if the step failed
-            error_msg = None
-            if step.get("error"):
-                error_msg = step["error"].get("message") or str(step["error"])
+            if isinstance(error_obj, dict):
+                error_msg = error_obj.get("message") or str(error_obj)
+            else:
+                error_msg = str(error_obj)
 
-            # Extract screenshot attachment path if present
+            # Check 'attachments' array for screenshots
             screenshot_path = None
-            for snippet in step.get("snippet", []):
-                if "screenshot" in snippet.get("title", "").lower():
-                    screenshot_path = snippet.get("path")
+            for attachment in step.get("attachments", []):
+                if "screenshot" in attachment.get("name", "").lower():
+                    screenshot_path = attachment.get("path")
 
-            step_records.append((
+            failed_records.append((
                 test_result_id,
                 step_name,
                 step_status,
@@ -319,18 +320,48 @@ def parse_and_insert_steps(cursor, test_result_id, steps):
                 screenshot_path
             ))
 
-            # Recurse into nested steps inside this step if any exist
-            if step.get("steps"):
-                parse_and_insert_steps(cursor, test_result_id, step["steps"])
+        # Recurse into nested child steps
+        if step.get("steps"):
+            failed_records.extend(extract_failed_steps(step["steps"], test_result_id))
 
-    if step_records:
-        insert_steps_query = """
+    return failed_records
+
+
+def parse_and_insert_failed_steps(cursor, test_result_id, raw_steps, last_result_error=None):
+
+    # get failed step records
+    failed_step_records = extract_failed_steps(raw_steps, test_result_id)
+
+    # Fallback if test failed overall but no specific step node was flagged with an error
+    if not failed_step_records and last_result_error:
+        if isinstance(last_result_error, dict):
+            fallback_msg = last_result_error.get("message") or str(last_result_error)
+        else:
+            fallback_msg = str(last_result_error)
+
+        failed_step_records.append((
+            test_result_id,
+            "Step Name not found",
+            "FAILED",
+            fallback_msg,
+            "Screenshot Path not found"
+        ))
+
+    # if failed records exist then save to db
+    if failed_step_records:
+        failed_steps_query = """
             INSERT INTO test_step_results (
                 test_result_id, step_name, step_status, error_message, screenshot_path
             ) 
             VALUES %s;
         """
-        execute_values(cursor, insert_steps_query, step_records)
+
+        try:
+            execute_values(cursor, failed_steps_query, failed_step_records)
+            print(f"  └─ Inserted {len(failed_step_records)} failed step(s) for test_result_id: {test_result_id}")
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"  └─ ❌ Failed to insert step results for test_result_id {test_result_id}: {e}")
 
 
 def main():
