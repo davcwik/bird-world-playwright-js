@@ -221,7 +221,6 @@ def parse_and_save_playwright_results():
         for suite in json_suites:
             process_suite(cursor, suite, test_run_id, connection)
 
-        print("dave1")
         connection.commit()
         print("All test execution data successfully logged to database.")
 
@@ -273,7 +272,7 @@ def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
             test_case_data = (test_run_id, suite_name, test_name, status, duration_sec, tags_str)
 
             try:
-                cursor.execute(test_case_query, test_case_data,)
+                cursor.execute(test_case_query, test_case_data)
                 test_result_id = cursor.fetchone()[0] # save for later
             except Exception as e:
                 connection.rollback()
