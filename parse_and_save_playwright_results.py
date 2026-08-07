@@ -212,18 +212,16 @@ def parse_and_save_playwright_results():
 
 
 
-
         #########################################################
         ### SAVE TEST CASE RESULTS and TEST STEP RESULTS DATA ###
         #########################################################
-        
-        print("dave1")
+
         json_suites = json_data.get("suites", [])
-        print("dave2")
         
         for suite in json_suites:
-            process_suite(cursor, suite, test_run_id)
+            process_suite(cursor, suite, test_run_id, connection)
 
+        print("dave1")
         connection.commit()
         print("All test execution data successfully logged to database.")
 
@@ -239,19 +237,19 @@ def parse_and_save_playwright_results():
             connection.close()
 
 
-def process_suite(cursor, suite, test_run_id, spec_file=None):
+def process_suite(cursor, suite, test_run_id, connection, spec_file=None):
 
     print("daveloop")
-    
+
     # Playwright root suite has file path in location/title
     current_spec_file = suite.get("file")
 
-    # Process spec entries (test cases) in this suite
+    # Loop thru suite and save each spec (aka test case) test result
     for spec in suite.get("specs", []):
-        suite_name = suite["suites"][0]["title"]
-        test_name = spec.get("title", "")
+        suite_name = suite["suites"][0]["title"] # ex. desktop/login.spec.ts
+        test_name = spec.get("title", "") # ex. Login Success and Logout happy path (user email) @priority-critical
         tags_list = spec.get("tags", [])
-        tags_str = ",".join(tags_list) if tags_list else None
+        tags_str = ",".join(tags_list) if tags_list else None # ex. "@platform-desktop,@feature-login,@priority-critical"
 
         for test in spec.get("tests", []):
             results = test.get("results", [])
@@ -264,25 +262,29 @@ def process_suite(cursor, suite, test_run_id, spec_file=None):
             duration_sec = int(last_result.get("duration", 0) / 1000)
 
             # Insert into test_results
-            insert_test_query = """
+            test_case_query = """
                 INSERT INTO test_results (
                     test_run_id, suite_name, test_name, status, duration_seconds, tags
                 ) 
                 VALUES (%s, %s, %s, %s, %s, %s) 
                 RETURNING id;
             """
-            cursor.execute(
-                insert_test_query,
-                (test_run_id, suite_name, test_name, status, duration_sec, tags_str),
-            )
 
-            test_result_id = cursor.fetchone()[0] # save for later
+            test_case_data = (test_run_id, suite_name, test_name, status, duration_sec, tags_str)
+
+            try:
+                cursor.execute(test_case_query, test_case_data,)
+                test_result_id = cursor.fetchone()[0] # save for later
+            except Exception as e:
+                connection.rollback()
+                print(f"An error occurred while saving test suite data to database: {e}")
+            
 
             # Parse steps (including user test.step blocks inside Page Objects)
             raw_steps = last_result.get("steps", [])
             parse_and_insert_steps(cursor, test_result_id, raw_steps)
 
-    # Recurse through nested suites (e.g. test.describe blocks)
+    # Recurse through nested suites (e.g. test.describe blocks)s
     for child_suite in suite.get("suites", []):
         process_suite(cursor, child_suite, test_run_id, current_spec_file)
 
