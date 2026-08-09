@@ -13,8 +13,8 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: self-hosted # tests run via Github self-hosted runner
-    #runs-on: ubuntu-latest # tests run via Github.com cloud runner
+    runs-on: self-hosted # tests run via Github self-hosted runner locally on laptop
+    # runs-on: ubuntu-latest # tests run via Github.com cloud runner
 
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +26,8 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers
-        # need to exlude WebKit browser install because it is not supported for MacOS 13
-        run: npx playwright install chromium firefox --with-deps
+        # WebKit browser is intentionally excluded because it is not supported for MacOS 13
+        run: npx playwright install chromium firefox --with-deps # install only chrome and firefox
         # run: npx playwright install --with-deps # installs all browsers
 
       - name: Decrypt Environment File
@@ -39,12 +39,47 @@ jobs:
             --output .env.$ENV .env.$ENV.gpg
       
       - name: Run Desktop Critical Tests
+        continue-on-error: true # subsequent steps run even when tests fail
+        env:
+          ENV: ${{ inputs.environment }}  
+        run: |
+
+          # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
+          WORKFLOW_REF="${{ github.workflow_ref }}"
+          WORKFLOW_FILE_PATH="${WORKFLOW_REF%@*}"       # Remove '@refs/heads/main'
+          YML_FILENAME="${WORKFLOW_FILE_PATH##*/}"      # final value is only file name ex. "desktop_tests.yml"
+
+          # get the test run's Playwright tags
+          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
+          PLAYWRIGHT_PROJECT="Github Chrome (Chromium)"
+
+          # save to system variables that can be accessed later
+          echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
+          echo "GITHUB_JOB_NAME=$YML_FILENAME" >> $GITHUB_ENV
+          echo "BROWSER=$PLAYWRIGHT_PROJECT" >> $GITHUB_ENV
+
+          # launch test run
+          npx playwright test --grep "$TEST_RUN_TAGS" --project="$PLAYWRIGHT_PROJECT" 
+      
+      - name: Save results to DB
+        if: ${{ !cancelled() }}
         env:
           ENV: ${{ inputs.environment }}
-        run: npx playwright test --grep "(?=.*@platform-desktop)(?=.*@priority-critical)"
-      - uses: actions/upload-artifact@v4
+          BROWSER: ${{ env.BROWSER }}
+          GITHUB_JOB_NAME: ${{ env.GITHUB_JOB_NAME }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
+        run: |
+          source /Users/david/Documents/automation/work/bird-world-playwright-js/.venv/bin/activate
+          python parse_and_save_playwright_results.py          
+
+      - name: Upload Test Artifacts to GitHub Cloud
         if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          name: playwright-test-artifacts
+          path: |
+            playwright-report/
+            results.json
+          retention-days: 14
+      

@@ -19,3 +19,17 @@ node_modules/
 # BUT do not ignore the following env files
 !.env.example
 !.env.production.gpg
+
+# Python virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python compiled bytecode
+__pycache__/
+*.pyc
+
+# test result files
+results.json
+results.xml
