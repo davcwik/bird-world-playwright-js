@@ -82,4 +82,10 @@ jobs:
             playwright-report/
             results.json
           retention-days: 14
+
+      - name: Clean up old Playwright reports on GitHub Pages branch
+        run: |
+          # Keep only the last 10 build directories for this job
+          cd reports/desktop-critical
+          ls -t | tail -n +11 | xargs rm -rf
       

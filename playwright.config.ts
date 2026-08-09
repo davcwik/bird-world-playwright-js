@@ -62,8 +62,10 @@ export default defineConfig({
     baseURL: process.env.BASE_URL,
 
     /* Collect trace and screenshot */
+    // only save on failure to minimize storage space for Playwright reports stored on Github Pages
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
 
     // Delays every browser action by X ms to mimic human behavior
     launchOptions: {

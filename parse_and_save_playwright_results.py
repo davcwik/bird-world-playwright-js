@@ -145,9 +145,10 @@ def parse_and_save_playwright_results():
 
     environment = os.getenv("ENV")
     browser = os.getenv("BROWSER")
-    github_job_name = os.getenv("GITHUB_JOB_NAME")
+    github_job_name = os.getenv("GITHUB_JOB_NAME").removesuffix('.yml') # convert desktop-critical.yml to desktop-critical
     github_build_number = os.getenv("GITHUB_RUN_NUMBER")
     playwright_tags = os.getenv("TEST_RUN_TAGS")
+
     print(f"Environment: {environment}")
     print(f"Browser: {browser}")
     print(f"Github Job Name : {github_job_name}")
