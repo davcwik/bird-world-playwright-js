@@ -93,9 +93,6 @@ def parse_and_save_playwright_results():
         print(f"ERROR: Expected test results file not found at '{json_file_path}'.")
         sys.exit(1)
 
-    # with open(json_file_path, "r", encoding="utf-8") as f:
-        # data = json.load(f)
-
     json_data = []
     if os.path.exists(json_file_path) and os.path.getsize(json_file_path) > 0:
         with open(json_file_path, 'r') as file:
@@ -107,16 +104,6 @@ def parse_and_save_playwright_results():
 
     json_results = json_data.get("stats", {})
 
-    # get started_at datetime
-    # raw_timestamp = json_results.get("stats", {}).get("startTime") # ex. "2026-06-12T18:25:00.123Z"
-    # raw_timestamp = json_results.get("startTime") # ex. "2026-06-12T18:25:00.123Z"
-    # if raw_timestamp:
-    #     utc_dt = datetime.fromisoformat(raw_timestamp.replace("Z", "+00:00")) # Convert to format (YYYY-MM-DD HH:MM:SS), replace 'Z' with UTC offset
-    #     started_at_utc = utc_dt.strftime('%Y-%m-%d %H:%M:%S') 
-    #     print(f"Test run start time is {started_at_utc} UTC")
-    # else:
-    #     # Fallback to current UTC time if not found in JSON
-    #     started_at_utc = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
     # extract start time
     # if json_results is empty, we skip parsing and keep our default "NO TESTS RUN" values
