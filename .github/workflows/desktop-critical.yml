@@ -1,4 +1,4 @@
-name: Desktop Critical Tests
+name: desktop-critical
 
 on:
   workflow_dispatch:
@@ -45,9 +45,7 @@ jobs:
         run: |
 
           # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
-          WORKFLOW_REF="${{ github.workflow_ref }}"
-          WORKFLOW_FILE_PATH="${WORKFLOW_REF%@*}"       # Remove '@refs/heads/main'
-          YML_FILENAME="${WORKFLOW_FILE_PATH##*/}"      # final value is only file name ex. "desktop_tests.yml"
+          WORKFLOW_NAME="${{ github.workflow }}"
 
           # get the test run's Playwright tags
           TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
@@ -55,7 +53,7 @@ jobs:
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
-          echo "GITHUB_JOB_NAME=$YML_FILENAME" >> $GITHUB_ENV
+          echo "GITHUB_WORKFLOW_NAME=$WORKFLOW_NAME" >> $GITHUB_ENV
           echo "BROWSER=$PLAYWRIGHT_PROJECT" >> $GITHUB_ENV
 
           # launch test run
@@ -66,7 +64,7 @@ jobs:
         env:
           ENV: ${{ inputs.environment }}
           BROWSER: ${{ env.BROWSER }}
-          GITHUB_JOB_NAME: ${{ env.GITHUB_JOB_NAME }}
+          GITHUB_WORKFLOW_NAME: ${{ env.GITHUB_WORKFLOW_NAME }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
           TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
         run: |
@@ -82,4 +80,19 @@ jobs:
             playwright-report/
             results.json
           retention-days: 14
+
+      - name: Clean up old Playwright reports on GitHub Pages branch
+        run: |
+          # Keep only the last 10 build directories for this job
+          cd reports/desktop-critical
+          ls -t | tail -n +11 | xargs rm -rf
+
+      - name: Deploy Playwright Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report
+          # Target path matches the clean DB value: reports/desktop-critical/5
+          destination_dir: reports/desktop-critical/${{ github.run_number }}
       
