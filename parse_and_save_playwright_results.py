@@ -145,13 +145,13 @@ def parse_and_save_playwright_results():
 
     environment = os.getenv("ENV")
     browser = os.getenv("BROWSER")
-    github_job_name = os.getenv("GITHUB_JOB_NAME").removesuffix('.yml') # convert desktop-critical.yml to desktop-critical
+    github_workflow_name = os.getenv("GITHUB_WORKFLOW_NAME")
     github_build_number = os.getenv("GITHUB_RUN_NUMBER")
     playwright_tags = os.getenv("TEST_RUN_TAGS")
 
     print(f"Environment: {environment}")
     print(f"Browser: {browser}")
-    print(f"Github Job Name : {github_job_name}")
+    print(f"Github Job Name : {github_workflow_name}")
     print(f"Github Build Number: {github_build_number}")
     print(f"Playwright Tags: {playwright_tags}")
 
@@ -169,7 +169,7 @@ def parse_and_save_playwright_results():
 
         test_run_query = """
             INSERT INTO test_runs (
-                browser, environment, github_job_name, github_build_number, playwright_tags,
+                browser, environment, github_workflow_name, github_build_number, playwright_tags,
                 total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms
             ) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
@@ -177,7 +177,7 @@ def parse_and_save_playwright_results():
         """
 
         test_run_data = (
-            browser, environment, github_job_name, github_build_number, playwright_tags,
+            browser, environment, github_workflow_name, github_build_number, playwright_tags,
             total_tests, passed_tests, failed_tests, overall_result,
             started_at_utc, execution_time_ms
         )
