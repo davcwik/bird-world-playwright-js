@@ -88,11 +88,11 @@ jobs:
           ls -t | tail -n +11 | xargs rm -rf
 
       - name: Deploy Playwright Report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v3
+        if: always() # Run even if tests failed
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./playwright-report
-          # Target path matches the clean DB value: reports/desktop-critical/5
-          destination_dir: reports/desktop-critical/${{ github.run_number }}
+          publish_dir: ./playwright-report # Default Playwright output directory
+          destination_dir: playwright-reports/${{ github.workflow }}/${{ github.run_number }}
+          keep_files: true # Keep reports from previous workflow runs
       
