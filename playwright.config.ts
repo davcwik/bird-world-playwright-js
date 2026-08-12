@@ -4,27 +4,11 @@ import path from 'path';
 import fs from 'fs';
 
 
-///////////////
-// VARIABLES //
-///////////////
-
-const environment = process.env.ENV || 'production';
-
-// Define shared options once
-// Were originally in the defineConfig > use block but some were getting overwritten by the device defaults in the projects block
-const globalOptions = {
-  baseURL: process.env.BASE_URL, // Base URL to use in actions like "await page.goto()"
-  screenshot: 'only-on-failure' as const,
-  trace: 'retain-on-failure' as const, // record throughout test and keep if test fails, else auto-delete upon test completion
-  video: 'retain-on-failure' as const,
-  launchOptions: {
-    slowMo: 500, // Delays every browser action by X ms to mimic human behavior
-  },
-};
-
 ////////////////////////
 // LOAD ENV FILE DATA //
 ////////////////////////
+
+const environment = process.env.ENV || 'production';
 
 // verify that the ENV variable was passed
 if (!environment) {
@@ -41,6 +25,23 @@ if (!fs.existsSync(envFilePath)) {
 
 // load the file
 dotenv.config({ path: envFilePath });
+
+
+////////////////////
+// GLOBAL OPTIONS //
+////////////////////
+
+// Define shared options once
+// Were originally in the defineConfig > use block but some were getting overwritten by the device defaults in the projects block
+const globalOptions = {
+  baseURL: process.env.BASE_URL, // Base URL to use in actions like "await page.goto()"
+  screenshot: 'only-on-failure' as const,
+  trace: 'retain-on-failure' as const, // record throughout test and keep if test fails, else auto-delete upon test completion
+  video: 'retain-on-failure' as const,
+  launchOptions: {
+    slowMo: 500, // Delays every browser action by X ms to mimic human behavior
+  },
+};
 
 
 ///////////////////////////////
@@ -89,12 +90,8 @@ export default defineConfig({
     // },
 
   },
-
-
-  /////////////////////
+  
   // BROWSER CONFIGS //
-  /////////////////////
-
   projects: [
     { // default chromium installation used by Github to run tests in the cloud
       name: 'Github Chrome (Chromium)',
