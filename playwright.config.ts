@@ -38,9 +38,6 @@ const globalOptions = {
   screenshot: 'only-on-failure' as const,
   trace: 'retain-on-failure' as const, // record throughout test and keep if test fails, else auto-delete upon test completion
   video: 'retain-on-failure' as const,
-  launchOptions: {
-    slowMo: 500, // Delays every browser action by X ms to mimic human behavior
-  },
 };
 
 
@@ -82,15 +79,10 @@ export default defineConfig({
     // /* Collect trace and screenshot */
     // trace: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
     // screenshot: 'only-on-failure', // only taken if test fails
-    // video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
-
-    // // Delays every browser action by X ms to mimic human behavior
-    // launchOptions: {
-    //   slowMo: 500, 
-    // },
+    // video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completionå
 
   },
-  
+
   // BROWSER CONFIGS //
   projects: [
     { // default chromium installation used by Github to run tests in the cloud
