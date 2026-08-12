@@ -27,20 +27,6 @@ if (!fs.existsSync(envFilePath)) {
 dotenv.config({ path: envFilePath });
 
 
-////////////////////
-// GLOBAL OPTIONS //
-////////////////////
-
-// Define shared options once
-// Were originally in the defineConfig > use block but some were getting overwritten by the device defaults in the projects block
-const globalOptions = {
-  baseURL: process.env.BASE_URL, // Base URL to use in actions like "await page.goto()"
-  screenshot: 'only-on-failure' as const,
-  trace: 'retain-on-failure' as const, // record throughout test and keep if test fails, else auto-delete upon test completion
-  video: 'retain-on-failure' as const,
-};
-
-
 ///////////////////////////////
 // DEFAULT CONFIG PROPERTIES //
 ///////////////////////////////
@@ -72,15 +58,10 @@ export default defineConfig({
   
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-
-    // /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: process.env.BASE_URL,
-
-    // /* Collect trace and screenshot */
-    // trace: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
-    // screenshot: 'only-on-failure', // only taken if test fails
-    // video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completionå
-
+    baseURL: process.env.BASE_URL, // Base URL to use in actions like `await page.goto('')`.
+    trace: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
+    screenshot: 'only-on-failure', // only taken if test fails
+    video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completionå
   },
 
   // BROWSER CONFIGS //
@@ -89,7 +70,7 @@ export default defineConfig({
       name: 'Github Chrome (Chromium)',
       use: { 
         ...devices['Desktop Chrome'],
-        ...globalOptions,
+        screenshot: 'only-on-failure'
       },
     },
     {
@@ -97,7 +78,7 @@ export default defineConfig({
       use: {
         ...devices['iPhone X'],
         defaultBrowserType: 'chromium', // do not delete or else Webkit will be used instead of Chromium engine
-        ...globalOptions,
+        screenshot: 'only-on-failure'
       }
     },
     { // actual Chrome browser on laptop, cannot be used when running tests in the cloud on Github
@@ -105,7 +86,7 @@ export default defineConfig({
       use: { 
         ...devices['Desktop Chrome'], 
         channel: 'chrome',
-        ...globalOptions,
+        screenshot: 'only-on-failure'
       },
     },
     {
