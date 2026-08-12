@@ -3,7 +3,24 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
+
+///////////////
+// VARIABLES //
+///////////////
+
 const environment = process.env.ENV || 'production';
+
+// Define shared options once
+// Were originally in the defineConfig > use block but some were getting overwritten by the device defaults in the projects block
+const globalOptions = {
+  baseURL: process.env.BASE_URL, // Base URL to use in actions like "await page.goto()"
+  screenshot: 'only-on-failure' as const,
+  trace: 'retain-on-failure' as const, // record throughout test and keep if test fails, else auto-delete upon test completion
+  video: 'retain-on-failure' as const,
+  launchOptions: {
+    slowMo: 500, // Delays every browser action by X ms to mimic human behavior
+  },
+};
 
 ////////////////////////
 // LOAD ENV FILE DATA //
@@ -31,7 +48,7 @@ dotenv.config({ path: envFilePath });
 ///////////////////////////////
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * See https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
   testDir: './tests',
@@ -58,19 +75,18 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
 
-    /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: process.env.BASE_URL,
+    // /* Base URL to use in actions like `await page.goto('')`. */
+    // baseURL: process.env.BASE_URL,
 
-    /* Collect trace and screenshot */
-    // only save on failure to minimize storage space for Playwright reports stored on Github Pages
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    // /* Collect trace and screenshot */
+    // trace: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
+    // screenshot: 'only-on-failure', // only taken if test fails
+    // video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
 
-    // Delays every browser action by X ms to mimic human behavior
-    launchOptions: {
-      slowMo: 500, 
-    },
+    // // Delays every browser action by X ms to mimic human behavior
+    // launchOptions: {
+    //   slowMo: 500, 
+    // },
 
   },
 
@@ -82,22 +98,30 @@ export default defineConfig({
   projects: [
     { // default chromium installation used by Github to run tests in the cloud
       name: 'Github Chrome (Chromium)',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        ...globalOptions,
+      },
     },
     {
       name: 'Mobile Chrome',
       use: {
         ...devices['iPhone X'],
         defaultBrowserType: 'chromium', // do not delete or else Webkit will be used instead of Chromium engine
+        ...globalOptions,
       }
     },
     { // actual Chrome browser on laptop, cannot be used when running tests in the cloud on Github
       name: 'Desktop Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      use: { 
+        ...devices['Desktop Chrome'], 
+        channel: 'chrome',
+        ...globalOptions,
+      },
     },
     {
       name: 'API',
-      // No 'use' block needed because no browser launched
+      // No 'use' block because browser not needed
     },
     // {
     //   name: 'firefox',
@@ -116,4 +140,5 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
-});
+
+}); // end defineConfig
