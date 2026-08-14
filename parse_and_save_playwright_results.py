@@ -146,13 +146,15 @@ def parse_and_save_playwright_results():
     environment = os.getenv("ENV")
     browser = os.getenv("BROWSER")
     github_workflow_name = os.getenv("GITHUB_WORKFLOW_NAME")
-    github_build_number = os.getenv("GITHUB_RUN_NUMBER")
+    github_run_number = os.getenv("GITHUB_RUN_NUMBER")
+    github_run_id = os.getenv("GITHUB_RUN_ID")
     playwright_tags = os.getenv("TEST_RUN_TAGS")
 
     print(f"Environment: {environment}")
     print(f"Browser: {browser}")
     print(f"Github Job Name : {github_workflow_name}")
-    print(f"Github Build Number: {github_build_number}")
+    print(f"Github Run Number: {github_run_number}")
+    print(f"Github Run Id: {github_run_id}")
     print(f"Playwright Tags: {playwright_tags}")
 
 
@@ -169,17 +171,17 @@ def parse_and_save_playwright_results():
 
         test_run_query = """
             INSERT INTO test_runs (
-                browser, environment, github_workflow_name, github_build_number, playwright_tags,
-                total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms
+                browser, environment, github_workflow_name, github_run_number, playwright_tags,
+                total_tests, passed_tests, failed_tests, overall_result, started_at_utc, execution_time_ms, github_run_id
             ) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
             RETURNING id;
         """
 
         test_run_data = (
-            browser, environment, github_workflow_name, github_build_number, playwright_tags,
+            browser, environment, github_workflow_name, github_run_number, playwright_tags,
             total_tests, passed_tests, failed_tests, overall_result,
-            started_at_utc, execution_time_ms
+            started_at_utc, execution_time_ms, github_run_id
         )
 
         test_run_id = None
