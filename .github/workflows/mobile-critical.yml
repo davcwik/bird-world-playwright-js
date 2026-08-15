@@ -1,4 +1,4 @@
-name: desktop-critical
+name: mobile-critical
 
 on:
   workflow_dispatch:
@@ -55,8 +55,8 @@ jobs:
           WORKFLOW_NAME="${{ github.workflow }}"
 
           # get the test run's Playwright tags
-          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
-          PLAYWRIGHT_PROJECT="Github Chrome (Chromium)"
+          TEST_RUN_TAGS="(?=.*@platform-mobile)(?=.*@priority-critical)"
+          PLAYWRIGHT_PROJECT="Mobile Chrome"
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
