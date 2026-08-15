@@ -1,4 +1,4 @@
-name: desktop-critical
+name: api-non-critical
 
 on:
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
       - name: Skip Playwright Browser Install
         if: ${{ contains(github.workflow, 'api') }}
         run: echo "This is an API test run. Skipping Playwright browser installation."
-
+        
       - name: Decrypt Environment File
         env:
             ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
@@ -44,7 +44,7 @@ jobs:
         run: |
             gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
             --output .env.$ENV .env.$ENV.gpg
-      
+
       - name: Run Tests
         continue-on-error: true # subsequent steps run even when tests fail
         env:
@@ -55,8 +55,8 @@ jobs:
           WORKFLOW_NAME="${{ github.workflow }}"
 
           # get the test run's Playwright tags
-          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*@priority-critical)"
-          PLAYWRIGHT_PROJECT="Github Chrome (Chromium)"
+          TEST_RUN_TAGS="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium)"
+          PLAYWRIGHT_PROJECT="API"
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
