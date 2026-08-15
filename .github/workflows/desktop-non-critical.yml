@@ -1,0 +1,100 @@
+name: desktop-non-critical
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        type: choice
+        options:
+          - production
+
+permissions:
+  contents: write # for github pages          
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: self-hosted # tests run via Github self-hosted runner locally on laptop
+    # runs-on: ubuntu-latest # tests run via Github.com cloud runner
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        if: ${{ !contains(github.workflow, 'api') }}
+        run: npx playwright install chromium --with-deps # install only chrome
+        # Note: WebKit browser is not supported for MacOS 13
+
+      - name: Skip Playwright Browser Install
+        if: ${{ contains(github.workflow, 'api') }}
+        run: echo "This is an API test run. Skipping Playwright browser installation."
+
+      - name: Decrypt Environment File
+        env:
+            ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
+            ENV: ${{ inputs.environment }}
+        run: |
+            gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
+            --output .env.$ENV .env.$ENV.gpg
+      
+      - name: Run Tests
+        continue-on-error: true # subsequent steps run even when tests fail
+        env:
+          ENV: ${{ inputs.environment }}  
+        run: |
+
+          # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
+          WORKFLOW_NAME="${{ github.workflow }}"
+
+          # get the test run's Playwright tags
+          TEST_RUN_TAGS="(?=.*@platform-desktop)(?=.*(@priority-high|@priority-medium))"
+          PLAYWRIGHT_PROJECT="Github Chrome (Chromium)"
+
+          # save to system variables that can be accessed later
+          echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
+          echo "GITHUB_WORKFLOW_NAME=$WORKFLOW_NAME" >> $GITHUB_ENV
+          echo "BROWSER=$PLAYWRIGHT_PROJECT" >> $GITHUB_ENV
+
+          # launch test run (--pass-with-no-tests generates report if even no tests are run)
+          npx playwright test --grep "$TEST_RUN_TAGS" --project="$PLAYWRIGHT_PROJECT"  --pass-with-no-tests
+      
+      - name: Save results to DB
+        if: ${{ !cancelled() }}
+        env:
+          ENV: ${{ inputs.environment }}
+          BROWSER: ${{ env.BROWSER }}
+          GITHUB_WORKFLOW_NAME: ${{ env.GITHUB_WORKFLOW_NAME }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_RUN_ID: ${{ github.run_id}}
+          TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
+        run: |
+          source /Users/david/Documents/automation/work/bird-world-playwright-js/.venv/bin/activate
+          python parse_and_save_playwright_results.py          
+
+      - name: Upload Test Artifacts to GitHub Cloud
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-artifacts
+          path: |
+            playwright-report/
+            results.json
+          retention-days: 14
+
+      - name: Deploy Playwright Report to GitHub Pages
+        if: ${{ !cancelled() }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report # output directory where the test run's Playwright report is saved after the test execution is completed
+          destination_dir: playwright-reports/${{ github.workflow }}/${{ github.run_number }} # Published Playwright reports will be copied to this gh pages directory
+          keep_files: true # Keep reports from previous workflow runs
+          exclude_assets: '**/*.zip,**/*.webm' # Exclude trace archives and video files from Github Pages push to save space
