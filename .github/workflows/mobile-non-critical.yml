@@ -56,7 +56,7 @@ jobs:
 
           # get the test run's Playwright tags
           TEST_RUN_TAGS="(?=.*@platform-mobile)(?=.*(@priority-high|@priority-medium))"
-          PLAYWRIGHT_PROJECT="Mobile Chrome"
+          PLAYWRIGHT_PROJECT="Playwright Mobile Chrome"
 
           # save to system variables that can be accessed later
           echo "TEST_RUN_TAGS=$TEST_RUN_TAGS" >> $GITHUB_ENV 
