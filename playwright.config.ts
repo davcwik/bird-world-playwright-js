@@ -74,28 +74,38 @@ export default defineConfig({
 
   // BROWSER CONFIGS //
   projects: [
-    { // default chromium installation used by Github to run tests in the cloud
-      name: 'Github Chrome (Chromium)',
+    { // Playwright's bundled Chromium binary. Can be used in Github cloud or locally on laptop.
+      // If tests are running in Github cloud, you must use this browser.
+      name: 'Playwright Desktop Chrome',
       use: { 
         ...devices['Desktop Chrome'],
         screenshot: 'only-on-failure'
       },
     },
-    {
-      name: 'Mobile Chrome',
+    { // Actual installed Chrome browser on laptop. Do not use for running tests in Github cloud.
+      name: 'Installed Desktop Chrome',
+      use: { 
+        ...devices['Desktop Chrome'], 
+        channel: 'chrome', 
+        screenshot: 'only-on-failure'
+      },
+    },
+    { // Playwright's bundled Chromium binary. Can be used in Github cloud or locally on laptop.
+      // If tests are running in Github cloud, you must use this browser.
+      name: 'Playwright Mobile Chrome',
       use: {
         ...devices['iPhone X'],
         defaultBrowserType: 'chromium', // do not delete or else Webkit will be used instead of Chromium engine
         screenshot: 'only-on-failure'
       }
-    },
-    { // actual Chrome browser on laptop, cannot be used when running tests in the cloud on Github
-      name: 'Desktop Chrome',
-      use: { 
-        ...devices['Desktop Chrome'], 
+    }, 
+    { // Actual installed Chrome browser on laptop. Do not use for running tests in Github cloud.
+      name: 'Installed Mobile Chrome',
+      use: {
+        ...devices['iPhone X'],
         channel: 'chrome',
-        screenshot: 'only-on-failure'
-      },
+        screenshot: 'only-on-failure',
+      }
     },
     {
       name: 'API',
