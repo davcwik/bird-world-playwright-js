@@ -18,7 +18,7 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
     await globalHeaderDesktop.hoverOverUserAvatarImage();
     await globalHeaderDesktop.clickLogOutButton();
     await loginPageBase.expectLoginPageToBeVisible();
-    await loginPageBase.expectMessageTextToBeVisible("You are now logged out man!");
+    await loginPageBase.expectMessageTextToBeVisible("You are now logged out.");
 
   }); // end test
 
