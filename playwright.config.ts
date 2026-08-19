@@ -51,7 +51,7 @@ export default defineConfig({
   
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ['html'],
+    ['html', { open: 'never' }], // prevent auto-opening of the report in a browser window
     ['json', { outputFile: 'results.json' }],
     ['junit', { outputFile: 'results.xml' }]
   ],
@@ -103,6 +103,7 @@ export default defineConfig({
       name: 'Installed Mobile Chrome',
       use: {
         ...devices['iPhone X'],
+        defaultBrowserType: 'chromium',
         channel: 'chrome',
         screenshot: 'only-on-failure',
       }
