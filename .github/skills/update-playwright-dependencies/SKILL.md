@@ -13,7 +13,7 @@ Use this workflow for dependency maintenance in the Playwright project.
 ## Procedure
 
 1. Inspect the repository state with `git status --short --branch`, inspect `package.json`, and confirm the configured Git remote.
-2. Determine today's date in `MMDDYY` format. Create and switch to a new branch from the current `main` branch named `MMDDYY_dependency_updates`.
+2. Determine today's date in `MMDDYY` format. Create and switch to a new branch from the current `main` branch named `chore/MMDDYY_dependency_updates`.
 3. Analyze `package.json` for outdated dependencies with `npm outdated`.
 4. If no dependency upgrades are available, stop immediately and report exactly: `No dependency upgrades are needed at this time.` Do not run the remaining steps.
 5. If upgrades are available, update the outdated package versions in `package.json` while preserving the project's existing dependency conventions.
