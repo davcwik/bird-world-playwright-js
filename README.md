@@ -12,11 +12,11 @@ The saved test data is ultimately displayed on a custom Test Results Dashboard P
 - Database: PostgreSQL
 
 ## Highlights:
-- Test Website: Tests are executed against a WordPress test website hosted on a 3rd Web Hosting platform. The site has typical WordPress features such as Login, Lost Password, different User Types, User Profile settings and creating/editing blog posts
+- Test Website: Tests are executed against a WordPress test website hosted on a 3rd party Web Hosting platform. The site has typical WordPress features such as Login, Lost Password, different User Types, User Profile settings and creating/editing blog posts
 - Test Coverage: Desktop UI, Mobile UI and API tests
 - Code Structure: Page Object Model to keep code modular and easy to maintain
-- Parallel Execution: tests can be run in parallel either with a browser (UI tests) or without a browser (API tests)
-- Test Filtering: test runs can be configured by using system variables and tags such as: environment, browser and various custom Playwright test tags (ex. priority, feature, platform)
+- Parallel Execution: Tests can be run in parallel either with a browser (UI tests) or without a browser (API tests)
+- Test Filtering: Test runs can be configured by using system variables and tags such as: environment, browser and various custom Playwright test tags (ex. priority, feature, platform)
 - Security: Only GnuPG encrypted versions of .env files with sensitive test data (ex. user credentials, configuration details) are saved in the repository. During Github cloud test executions the files are decrypted to obtain the data. The data is provided temporarily during the test run execution but destroyed upon test run completion (see Self-Hosted Runner notes below), and never appears in logs or test result reports.
 - Deployment: Test runs can be launched manually or via various types of triggers using workflow scripts in Github Actions. Upon completion of any test run launched from Github Actions, a python script is triggered to save the test results to the database.
 - Historical Data: The PostgreSQL database contains test run metadata, scenario results and failed step details (including error messages)
