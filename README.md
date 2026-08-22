@@ -34,12 +34,15 @@ The saved test data is ultimately displayed on a custom Test Results Dashboard P
     * Select one of the workflow script options
     * Launch the workflow via the "Run Workflow" button
 
-Note: Workflows can also be configured to run in the pipeline from other Github actions, such as Creating Pull Requests
+Note: Workflows can also be configured to run in the pipeline from other Github triggers, such as creating Pull Requests or pushes to the main branch.
 
 ### Self-Hosted Github Test Runner:
 Test runs that are triggered via workflow scripts in Github Actions will execute in a Self-Hosted Runner that is installed locally on my laptop. This allows the automated test requests to have a static IP (local Wifi) that can be whitelisted to avoid firewalls implemented by the Web Hosting Provider that protect the test website.
 
 The Runner needs to be re-activated every time a workflow script is run, because each Runner instance is destroyed at the end of every test run (aka "ephemeral" mode). This is necessary as a security precaution to prevent sensitive test data leaks.
+
+### Playwright Reports on Github Pages:
+Upon completion of a test run workflow launched from Github Actions, the Playwright results report is copied to and published on GitHub Pages. A unique url is assigned to each report and is displayed on the test run's results card on the custom Test Results Dashboard Page (see repo [here](https://github.com/davcwik/playwright-results-dashboard)).
 
 ### AI Agent Skills:
 A variety of Skills are included in this codebase:
