@@ -40,9 +40,11 @@ Test runs that are triggered via workflow scripts in Github Actions will execute
 
 The Runner needs to be re-activated every time a workflow script is run, because each Runner instance is destroyed at the end of every test run (aka "ephemeral" mode). This is necessary as a security precaution to prevent sensitive test data leaks.
 
-### Copilot AI Agent Skills:
-
-
+### AI Agent Skills:
+A variety of Skills are included in this codebase:
+* create-Jira-bug-ticket: creates a Jira bug ticket for each test failure in the Playwright results report
+* run-all-desktop-tests: launches a test run locally on laptop for the applicable test cases (other options: mobile, API)
+* update-playwright-dependencies: creates a new branch, updates dependencies to current version, fixes any broken code, runs Playwright tests to verify fixes and then creates a Github PR for human review
 
 ### Working with Python locally in an IDE
 A python virtual environment (venv) has been installed locally on my laptop in the project's root directory. When working with any python script in the codebase, activating this venv will prevent IDE code error notifications in python files (ex. missing packages). It's not required to have this because currently the python scripts only execute for test runs launched from Github Cloud, but it's a good practice nonetheless.
