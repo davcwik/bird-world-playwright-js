@@ -24,26 +24,21 @@ The saved test data is ultimately displayed on a custom Test Results Dashboard P
 
 ### Executing tests:
 * Locally on laptop:
-** ENV=production npx playwright test --headed --grep "@platform-desktop.*@priority-critical" --project="Installed Desktop Chrome"
-** remove the "--headed" parameter to run tests as headless
+    * ENV=production npx playwright test --headed --grep "@platform-desktop.*@priority-critical" --project="Installed Desktop Chrome"
+    * remove the "--headed" parameter to run tests as headless
 
-* Github Cloud:
-** Activate the Self-Hosted Github Runner on the laptop
-** Go to Github cloud > Actions tab
-** Select one of the workflow script options in the left sidebar
-** You are now on the Workflow Page. On the far right side of the page, launch the tests via the "Run Workflow" button.
+* Via the Github cloud UI:
+    * Activate the Self-Hosted Github Runner on the laptop
+    * Go to Github cloud > Actions tab
+    * Select one of the workflow script options
+    * Launch the workflow via the "Run Workflow" button
+
+Note: Workflows can also be confifured to run from other Github actions, such as Creating Pull Requests
 
 ### Self-Hosted Github Test Runner:
-Test runs that are triggered via workflow scripts in Github Actions will execute in a Self-Hosted Runner that is installed locally on my laptop. This allows the automated test requests to have a static IP (my local Wifi) that can be whitelisted to avoid firewalls.
+Test runs that are triggered via workflow scripts in Github Actions will execute in a Self-Hosted Runner that is installed locally on my laptop. This allows the automated test requests to have a static IP (local Wifi) that can be whitelisted to avoid firewalls.
 
-This Runner needs to be activated every time a workflow script is run. This is necessary because the Runner is configured with "ephemeral" mode, which means each Runner instance is destroyed at the end of every test run. This is necessary as a security precaution to prevent sensitive test data leaks.
-
-Runner is installed in a directory outside of the codebase. 
-To activcate the Runner:
-- Navgiate to actions-runner directory
-- Run the command: ./start-runner.sh
-- The start-runner.sh script pings Github cloud to obtain the necessary configuration details to create a new Runner instance and then activates the runner. 
-- You can now launch a workflow script from the Github cloud Actions tab
+The Runner needs to be re-activated every time a workflow script is run, because each Runner instance is destroyed at the end of every test run (aka "ephemeral" mode). This is necessary as a security precaution to prevent sensitive test data leaks.
 
 ### Copilot AI Agent Skills:
 
