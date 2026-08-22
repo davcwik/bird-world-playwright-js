@@ -24,9 +24,13 @@ The saved test data is ultimately displayed on a custom Test Results Dashboard P
 
 ### Self-Hosted Github Test Runner:
 
+The web hosting provider that hosts the test website has a firewall layer that prevents automated tests, that are launched from Github Actions in the cloud, from landing on any of the test website's urls. The firewall considers requests from Github cloud servers to potentially be malicious. So as a preventative measure, the firewall redirects those requests to a 403 Forbidden error page. 
 
+A workaround for this problem is to whitelist the IP for the automated test requests, however that is not possible for Github Cloud because the IPs are dynamic and can change.
 
-Local Runner Requirements: To execute these tests, ensure Node.js and Playwright browsers are installed locally, as the ephemeral runner uses the host machine's environment.
+So the solution that was implemented was to install a Github Self Hosted Runner locally on a laptop. The test runs are still triggered from Github cloud, however they are routed to the local Self Hosted Runner on the laptop and launched from there. As a result, the automated tests will have a static dedicated IP (the laptop's wifi IP) that can be whitelisted to avoid the firewall 403 Forbidden error.
+
+Note: Ensure that the applicable browsers being used in the test runs (either Playwright browsers or standalone installed browsers) are installed locally on your laptop.
 
 ### Copilot AI Agent Skills:
 
