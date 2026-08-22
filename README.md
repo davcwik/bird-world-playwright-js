@@ -22,31 +22,43 @@ The saved test data is ultimately displayed on a custom Test Results Dashboard P
 
 ## Additional Notes
 
+### Executing tests:
+* Locally on laptop:
+** ENV=production npx playwright test --headed --grep "@platform-desktop.*@priority-critical" --project="Installed Desktop Chrome"
+** remove the "--headed" parameter to run tests as headless
+
+* Github Cloud:
+** Activate the Self-Hosted Github Runner on the laptop
+** Go to Github cloud > Actions tab
+** Select one of the workflow script options in the left sidebar
+** You are now on the Workflow Page. On the far right side of the page, launch the tests via the "Run Workflow" button.
+
 ### Self-Hosted Github Test Runner:
+Test runs that are triggered via workflow scripts in Github Actions will execute in a Self-Hosted Runner that is installed locally on my laptop. This allows the automated test requests to have a static IP (my local Wifi) that can be whitelisted to avoid firewalls.
 
-The web hosting provider that hosts the test website has a firewall layer that prevents automated tests, that are launched from Github Actions in the cloud, from landing on any of the test website's urls. The firewall considers requests from Github cloud servers to potentially be malicious. So as a preventative measure, the firewall redirects those requests to a 403 Forbidden error page. 
+This Runner needs to be activated every time a workflow script is run. This is necessary because the Runner is configured with "ephemeral" mode, which means each Runner instance is destroyed at the end of every test run. This is necessary as a security precaution to prevent sensitive test data leaks.
 
-A workaround for this problem is to whitelist the IP for the automated test requests, however that is not possible for Github Cloud because the IPs are dynamic and can change.
-
-So the solution that was implemented was to install a Github Self Hosted Runner locally on a laptop. The test runs are still triggered from Github cloud, however they are routed to the local Self Hosted Runner on the laptop and launched from there. As a result, the automated tests will have a static dedicated IP (the laptop's wifi IP) that can be whitelisted to avoid the firewall 403 Forbidden error.
-
-Note: Ensure that the applicable browsers being used in the test runs (either Playwright browsers or standalone installed browsers) are installed locally on your laptop.
+Runner is installed in a directory outside of the codebase. 
+To activcate the Runner:
+- Navgiate to actions-runner directory
+- Run the command: ./start-runner.sh
+- The start-runner.sh script pings Github cloud to obtain the necessary configuration details to create a new Runner instance and then activates the runner. 
+- You can now launch a workflow script from the Github cloud Actions tab
 
 ### Copilot AI Agent Skills:
 
 
 
 ### Working with Python locally in an IDE
-It is recommended that you install a python venv locally on your laptop in the project's root directory and activate it anytime you are working with a python script in the IDE. This will prevent error notifications (red squiggle underlines) in your python script files due to missing packages.
+A python virtual environment (venv) has been installed locally on my laptop in the project's root directory. When working with any python script in the codebase, activating this venv will prevent IDE code error notifications in python files (ex. missing packages). It's not required to have this because currently the python scripts only execute for test runs launched from Github Cloud, but it's a good practice nonetheless.
 
 First time only:
-1. Navigate to project root directory
+1. Navigate to project root directory in Terminal
 2. Create a virtual environment: python3 -m venv .venv
 3. Activate the virtual environment: source .venv/bin/activate
 4. Install the dependencies from requirements.txt: pip install -r requirements.txt
 
 Then whenever you work with python script files:  
-1. Navigate to project root directory
+1. Navigate to project root directory in Terminal
 2. Activate the venv: source .venv/bin/activate
 3. When finished, deactivate the venv: deactivate
-Note: If you are not working with any python script files in the IDE, no need to activate it.
