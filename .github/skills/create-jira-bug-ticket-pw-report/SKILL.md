@@ -1,5 +1,5 @@
 ---
-name: create-Jira-bug-ticket
+name: create-jira-bug-ticket-pw-report
 description: 'Create Jira Bug tickets in Atlassian from each failure in the most recent Playwright test run report. Use when asked to file Playwright failures as Jira bugs, create Jira tickets from test results, or report automated test failures to Jira.'
 argument-hint: 'Optional Playwright report path or ticket creation scope'
 user-invocable: true
