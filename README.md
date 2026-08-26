@@ -42,7 +42,7 @@ Test runs that are triggered via workflow scripts in Github Actions will execute
 The Runner needs to be re-activated every time a workflow script is run, because each Runner instance is destroyed at the end of every test run (aka "ephemeral" mode). This is necessary as a security precaution to prevent sensitive test data leaks.
 
 ### Playwright Reports on Github Pages:
-Upon completion of a test run workflow launched from Github Actions, the Playwright results report is copied to and published on GitHub Pages. A unique url is assigned to each report and the report can be viewed in a browser. The report link is displayed on the test run's results card on the Test Results Dashboard Page (see repo [here](https://github.com/davcwik/playwright-results-dashboard)).
+Upon completion of a test run workflow launched from Github Actions, the Playwright results report is copied to and published on GitHub Pages (static web server). A unique url is assigned to each report and the report can be viewed in a browser. The report link is displayed on the test run's results card on the Test Results Dashboard Page (see repo [here](https://github.com/davcwik/playwright-results-dashboard)).
 
 ### AI Integration:
 Custom Skills have been created and saved in this codebase:
