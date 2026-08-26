@@ -46,7 +46,8 @@ Upon completion of a test run workflow launched from Github Actions, the Playwri
 
 ### AI Integration:
 Custom Skills have been created and saved in this codebase:
-* create-Jira-bug-ticket: creates a Jira bug ticket for each test failure in the Playwright results report
+* create-jira-bug-ticket-exploratory-testing: creates a Jira bug ticket for each test failure from an AI agent's exploratory testing session
+* create-jira-bug-ticket-pw-report: creates a Jira bug ticket for each test failure in the Playwright results report
 * run-all-desktop-tests: launches a test run locally on laptop for the applicable test cases. Skills for mobile and API test runs are also available.
 * update-playwright-dependencies: creates a new branch, updates dependencies to current version, fixes any broken code, runs Playwright tests to verify fixes and then creates a Github PR for human review
 
