@@ -42,11 +42,15 @@ Test runs that are triggered via workflow scripts in Github Actions will execute
 The Runner needs to be re-activated every time a workflow script is run, because each Runner instance is destroyed at the end of every test run (aka "ephemeral" mode). This is necessary as a security precaution to prevent sensitive test data leaks.
 
 ### Playwright Reports on Github Pages:
-Upon completion of a test run workflow launched from Github Actions, the Playwright results report is copied to and published on GitHub Pages. A unique url is assigned to each report and is displayed on the test run's results card on the custom Test Results Dashboard Page (see repo [here](https://github.com/davcwik/playwright-results-dashboard)).
+Upon completion of a test run workflow launched from Github Actions, the Playwright results report is copied to and published on GitHub Pages. A unique url is assigned to each report and the report can be viewed in a browser. The report link is displayed on the test run's results card on the Test Results Dashboard Page (see repo [here](https://github.com/davcwik/playwright-results-dashboard)).
 
-### AI Agent Skills:
-A variety of Skills are included in this codebase:
+### AI Integration:
+Custom Skills have been created and saved in this codebase:
 * create-Jira-bug-ticket: creates a Jira bug ticket for each test failure in the Playwright results report
-* run-all-desktop-tests: launches a test run locally on laptop for the applicable test cases (other options: mobile, API)
+* run-all-desktop-tests: launches a test run locally on laptop for the applicable test cases. Skills for mobile and API test runs are also available.
 * update-playwright-dependencies: creates a new branch, updates dependencies to current version, fixes any broken code, runs Playwright tests to verify fixes and then creates a Github PR for human review
+
+The Playwright MCP server is included in this codebase:
+* see .vscode/mcp.json for configuration details
+* The MCP configuration is set to launch the browser in headed mode by default. This is preferred because headless mode browsers can sometimes return test failures that are false positives.
 
