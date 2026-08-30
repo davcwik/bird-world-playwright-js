@@ -1,4 +1,4 @@
-name: api-critical
+name: launch-playwright-test-suite
 
 on:
   workflow_dispatch:
