@@ -10,20 +10,17 @@ import fs from 'fs';
 
 const environment = process.env.ENV || 'production';
 
-// verify that the ENV variable was passed
+// Verify that the ENV variable was passed
 if (!environment) {
   throw new Error("ERROR: The ENV environment variable is not set.");
 }
 
-// construct the path for the decrypted .env file
+// Construct the path for the .env file
 const envFilePath = path.resolve(__dirname, `.env.${environment}`);
 
-// if the file does not exist, end the run
-if (!fs.existsSync(envFilePath)) {
-  throw new Error(`ERROR: Environment file not found at expected path: "${envFilePath}". Ensure decryption step completed successfully.`);
-}
-
-// load the file
+// Load the .env file if present (silently ignored if missing in GitHub Actions)
+// Note; file will only be present in local environment (ex. laptop)
+// If the file is missing, the process will continue and rely on GitHub Secrets for environment variables
 dotenv.config({ path: envFilePath });
 
 
@@ -64,8 +61,8 @@ export default defineConfig({
     video: 'retain-on-failure', // record throughout test and keep if test fails, else auto-delete upon test completion
     launchOptions: {
       args: [
-        // Fixes issue where redirect landing pages are not rendering in Playwright automation view because of how WordPress sites implement redirect transitions
-        // This results in the take-screenshot-upon-failure not executing if the test fails (ex. Upon logging out, should be redirected to the Login Page)
+        // The following ixes issue where redirect landing pages are not rendering in Playwright automation view because of how WordPress sites implement redirect transitions
+        // This results in the take-screenshot-upon-failure mistakenly not executing if the test fails 
         // this code disables the WordPress transition configuration so the redirect landing page now correctly renders in the Playwright automation view
         '--disable-features=ViewTransition,SpeculationRules',
       ],
