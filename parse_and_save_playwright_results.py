@@ -2,7 +2,6 @@ import json
 import os
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import execute_values
 from datetime import datetime, timezone
@@ -19,34 +18,6 @@ is_github_run = os.getenv("GITHUB_ACTIONS") == "true"
 if not is_github_run:
     print("Notice: Test run was executed locally on laptop. Results will not be saved to database.")
     sys.exit(0) 
-
-
-###################################
-## LOAD ENV FILE FOR CURRENT ENV ##
-###################################
-
-current_env = os.getenv("ENV")
-
-# if ENV var is not found ("None") or if value is empty string (""), end script and exit 
-if not current_env:
-    print("ERROR: Invalid value provided for environment. Unable to load environment file.")
-    sys.exit(1)
-
-# construct env file path (ex. .env.production)
-env_filename = f".env.{current_env}"
-env_path = Path(__file__).parent / env_filename
-
-# verify the file exists
-if not env_path.exists():
-    print(
-        f'ERROR: Environment file not found at expected path: "{env_path}". '
-        f'Tip: Verify that the env file decryption step successfully executed and outputted the file to the correct directory.'
-    )
-    sys.exit(1)
-
-# load environment variables
-load_dotenv(dotenv_path=env_path, override=True)
-print(f"Successfully loaded environment configuration from: {env_filename}")
 
 
 ############################
@@ -67,7 +38,7 @@ missing_keys = [key for key in required_keys if not DB_CONFIG[key]]
 
 if missing_keys:
     print(
-        f"ERROR: Missing database variables in {env_filename}: "
+        f"ERROR: Required database variables are missing: "
         f"{', '.join(missing_keys)}"
     )
     sys.exit(1)
