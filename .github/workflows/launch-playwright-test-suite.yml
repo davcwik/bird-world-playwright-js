@@ -1,0 +1,142 @@
+name: api-critical
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select Target Environment'
+        required: true
+        type: choice
+        options:
+          - production
+      suite:
+        description: 'Select Test Suite'
+        required: true
+        type: choice
+        options:
+          - api-critical
+          - api-non-critical
+          - desktop-critical
+          - desktop-non-critical
+          - mobile-critical
+          - mobile-non-critical
+
+permissions:
+  contents: write # for github pages          
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: self-hosted # for tests run via Github self-hosted runner locally on laptop
+    # runs-on: ubuntu-latest # for tests run via Github.com cloud runner
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Set Parameters for Selected Suite
+        id: config
+        run: |
+          
+          # get the suite name from the Github Actions UI input
+          suite="${{ inputs.suite }}"
+          browser=""
+          tags=""
+
+          # Determine Browser and Tags based on Suite selection
+          case "$suite" in
+            "api-critical")
+              browser="API"
+              tags="(?=.*@platform-api)(?=.*@priority-critical)"
+              ;;
+            "api-non-critical")
+              browser="API"
+              tags="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium))"
+              ;;
+            "desktop-critical")
+              browser="Playwright Desktop Chrome"
+              tags="(?=.*@platform-desktop)(?=.*@priority-critical)"
+              ;;
+            "desktop-non-critical")
+              browser="Playwright Desktop Chrome"
+              tags="(?=.*@platform-desktop)(?=.*(@priority-high|@priority-medium))"
+              ;;
+            "mobile-critical")
+              browser="Playwright Mobile Chrome"
+              tags="(?=.*@platform-mobile)(?=.*@priority-critical)"
+              ;;
+            "mobile-non-critical")
+              browser="Playwright Mobile Chrome"
+              tags="(?=.*@platform-mobile)(?=.*(@priority-high|@priority-medium))"
+              ;;
+            *)
+              echo "Unable to find a match for provided suite: $suite"
+              exit 1
+              ;;
+          esac
+
+          # Map Bash variables to environment variables
+          echo "GITHUB_WORKFLOW_NAME=$suite" >> $GITHUB_ENV
+          echo "BROWSER=$browser" >> $GITHUB_ENV
+          echo "TEST_RUN_TAGS=$tags" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        if: ${{ !contains(inputs.suite, 'api') }}
+        run: npx playwright install chromium --with-deps # install only chrome
+        # Note: WebKit browser is not supported for MacOS 13
+
+      - name: Skip Playwright Browser Install
+        if: ${{ contains(inputs.suite, 'api') }}
+        run: echo "This is an API test run. Skipping Playwright browser installation."
+
+      - name: Run Tests
+        continue-on-error: true # subsequent steps run even when tests fail
+        env:
+          # Map GitHub Actions UI inputs to environment variables
+          ENV: ${{ inputs.environment }}  
+          # Map GitHub Secrets to environment variables
+          BASE_URL: ${{ secrets.BASE_URL }}
+          SUBSCRIBER_USER_EMAIL: ${{ secrets.SUBSCRIBER_USER_EMAIL }}
+          SUBSCRIBER_USER_NAME: ${{ secrets.SUBSCRIBER_USER_NAME }}
+          SUBSCRIBER_USER_PASSWORD: ${{ secrets.SUBSCRIBER_USER_PASSWORD }}
+        run: |
+          # launch test run (--pass-with-no-tests generates report if even no tests are run)
+          npx playwright test --grep "$TEST_RUN_TAGS" --project="$BROWSER"  --pass-with-no-tests
+      
+      - name: Save results to DB
+        if: ${{ !cancelled() }}
+        env:
+          ENV: ${{ inputs.environment }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: |
+          source /Users/david/Documents/automation/work/bird-world-playwright-js/.venv/bin/activate
+          python parse_and_save_playwright_results.py          
+
+      - name: Upload Test Artifacts to GitHub Cloud
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-artifacts
+          path: |
+            playwright-report/
+            results.json
+          retention-days: 14
+
+      - name: Deploy Playwright Report to GitHub Pages
+        if: ${{ !cancelled() }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report # output directory where the test run's Playwright report is saved after the test execution is completed
+          destination_dir: playwright-reports/${{ github.workflow }}/${{ github.run_number }} # Published Playwright reports will be copied to this gh pages directory
+          keep_files: true # Keep reports from previous workflow runs
+          exclude_assets: '**/*.zip,**/*.webm' # Exclude trace archives and video files from Github Pages push to save space
