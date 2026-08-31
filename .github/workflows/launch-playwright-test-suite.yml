@@ -49,27 +49,27 @@ jobs:
           case "$suite" in
             "api-critical")
               browser="API"
-              tags="(?=.*@platform-api)(?=.*@priority-critical)"
+              tags="@platform-api.*@priority-critical"
               ;;
             "api-non-critical")
               browser="API"
-              tags="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium))"
+              tags="@platform-api.*(@priority-high|@priority-medium)"
               ;;
             "desktop-critical")
               browser="Installed Desktop Chrome"
-              tags="(?=.*@platform-desktop)(?=.*@priority-critical)"
+              tags="@platform-desktop.*@priority-critical"
               ;;
             "desktop-non-critical")
               browser="Installed Desktop Chrome"
-              tags="(?=.*@platform-desktop)(?=.*(@priority-high|@priority-medium))"
+              tags="@platform-desktop.*(@priority-high|@priority-medium)"
               ;;
             "mobile-critical")
               browser="Installed Mobile Chrome"
-              tags="(?=.*@platform-mobile)(?=.*@priority-critical)"
+              tags="@platform-mobile.*@priority-critical"
               ;;
             "mobile-non-critical")
               browser="Installed Mobile Chrome"
-              tags="(?=.*@platform-mobile)(?=.*(@priority-high|@priority-medium))"
+              tags="@platform-mobile.*(@priority-high|@priority-medium)"
               ;;
             *)
               echo "Unable to find a match for provided suite: $suite"
@@ -107,6 +107,8 @@ jobs:
           SUBSCRIBER_USER_PASSWORD: ${{ secrets.SUBSCRIBER_USER_PASSWORD }}
         run: |
           # launch test run (--pass-with-no-tests generates report if even no tests are run)
+          echo "Target Browser: $BROWSER"
+          echo "Target Tags: $TEST_RUN_TAGS"
           npx playwright test --grep "$TEST_RUN_TAGS" --project="$BROWSER"  --pass-with-no-tests
       
       - name: Save results to DB
