@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: ${{ !contains(github.workflow, 'api') }}
-        run: npx playwright install chromium --with-deps # install only chrome
+        run: npx playwright install chromium # install only chrome
         # Note: WebKit browser is not supported for MacOS 13
 
       - name: Skip Playwright Browser Install

@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: ${{ !contains(github.workflow, 'api') }}
-        run: npx playwright install chromium --with-deps # install only chrome
+        run: npx playwright install chromium # install only chrome
         # Note: WebKit browser is not supported for MacOS 13
 
       - name: Skip Playwright Browser Install
@@ -55,7 +55,7 @@ jobs:
           WORKFLOW_NAME="${{ github.workflow }}"
 
           # get the test run's Playwright tags
-          TEST_RUN_TAGS="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium)"
+          TEST_RUN_TAGS="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium))"
           PLAYWRIGHT_PROJECT="API"
 
           # save to system variables that can be accessed later
