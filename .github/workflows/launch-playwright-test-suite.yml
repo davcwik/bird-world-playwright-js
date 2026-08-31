@@ -140,6 +140,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwright-report # output directory where the test run's Playwright report is saved after the test execution is completed
-          destination_dir: playwright-reports/${{ github.workflow }}/${{ github.run_number }} # Published Playwright reports will be copied to this gh pages directory
+          destination_dir: playwright-reports/${{ inputs.suite }}/${{ github.run_number }} # Published Playwright reports will be copied to this gh pages directory
           keep_files: true # Keep reports from previous workflow runs
           exclude_assets: '**/*.zip,**/*.webm' # Exclude trace archives and video files from Github Pages push to save space
