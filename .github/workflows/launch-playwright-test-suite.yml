@@ -22,7 +22,7 @@ on:
           - mobile-non-critical
 
 permissions:
-  contents: write # for github pages          
+  contents: write # permission setting for github pages          
 
 jobs:
   test:
@@ -56,19 +56,19 @@ jobs:
               tags="(?=.*@platform-api)(?=.*(@priority-high|@priority-medium))"
               ;;
             "desktop-critical")
-              browser="Playwright Desktop Chrome"
+              browser="Installed Desktop Chrome"
               tags="(?=.*@platform-desktop)(?=.*@priority-critical)"
               ;;
             "desktop-non-critical")
-              browser="Playwright Desktop Chrome"
+              browser="Installed Desktop Chrome"
               tags="(?=.*@platform-desktop)(?=.*(@priority-high|@priority-medium))"
               ;;
             "mobile-critical")
-              browser="Playwright Mobile Chrome"
+              browser="Installed Mobile Chrome"
               tags="(?=.*@platform-mobile)(?=.*@priority-critical)"
               ;;
             "mobile-non-critical")
-              browser="Playwright Mobile Chrome"
+              browser="Installed Mobile Chrome"
               tags="(?=.*@platform-mobile)(?=.*(@priority-high|@priority-medium))"
               ;;
             *)
@@ -85,14 +85,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
-        if: ${{ !contains(inputs.suite, 'api') }}
-        run: npx playwright install chromium # install only chrome
-        # Note: WebKit browser is not supported for MacOS 13
+      # The following steps are skipped because Playwright no longer allows browser installs on MacOS13. The tests are instead configured to use the local installed browsers.
+      #- name: Install Playwright Browsers
+        #if: ${{ !contains(inputs.suite, 'api') }}
+        #run: npx playwright install chromium # install only chrome
+        ## Note: WebKit browser is not supported for MacOS 13
 
-      - name: Skip Playwright Browser Install
-        if: ${{ contains(inputs.suite, 'api') }}
-        run: echo "This is an API test run. Skipping Playwright browser installation."
+      #- name: Skip Playwright Browser Install
+        #if: ${{ contains(inputs.suite, 'api') }}
+        #run: echo "This is an API test run. Skipping Playwright browser installation."
 
       - name: Run Tests
         continue-on-error: true # subsequent steps run even when tests fail
