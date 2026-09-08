@@ -8,6 +8,7 @@ import { EnvFileReader } from '../utils/EnvFileReader';
 */
 export interface ApiResponseData<T = any> {
   statusCode: number;
+  headers: Record<string, string>;
   responseData: T;
 }
 
@@ -50,6 +51,7 @@ export class ApiBase {
 
       return {
         statusCode: response.status(),
+        headers: response.headers(),
         responseData: await response.json(),
       };
     });      
@@ -64,11 +66,12 @@ export class ApiBase {
    * @param payload - Form Data payload
    * @returns - response data and status code
    */
-  public async sendFormDataHttpRequest(httpMethod: string, path: string, payload: Record<string, string>): Promise<ApiResponseData<string>> {
+  public async sendFormDataHttpRequest(httpMethod: string, path: string, payload: Record<string, string>, options?: { maxRedirects?: number }): Promise<ApiResponseData<string>> {
     return await test.step(`Send Form Data request ${httpMethod.toUpperCase()} ${path}`, async () => {
-      const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: payload });
+      const response: APIResponse = await this.sendHttpRequestAsType(httpMethod, path, { form: payload, ...options });
       return {
         statusCode: response.status(),
+        headers: response.headers(),
         responseData: await response.text(),
       };
     });        
