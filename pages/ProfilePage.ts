@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 export class ProfilePage {
 
@@ -7,7 +7,6 @@ export class ProfilePage {
   ///////////////
 
   private readonly page: Page;
-  private readonly profileForm: Locator;
 
 
   /////////////////
@@ -16,7 +15,6 @@ export class ProfilePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.profileForm = page.locator('#your-profile');
   }
 
   
@@ -27,7 +25,8 @@ export class ProfilePage {
   async expectProfilePageToBeVisible(): Promise<void> {
     await test.step(`Verify Profile Page is visible`, async () => {
       await this.page.waitForLoadState('networkidle');
-      await expect(this.profileForm).toBeVisible();
+      const profileForm = this.page.locator('#your-profile');
+      await expect(profileForm).toBeVisible();
     });       
   }
 

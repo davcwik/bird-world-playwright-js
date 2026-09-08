@@ -33,7 +33,7 @@ test.describe('API - Login', { tag: ['@platform-api', '@feature-login'] }, () =>
   }); // end test
 
 
-    test('Login API returns correct response for Subscriber unsuccessful login invalid password @priority-critical @dave', async ({ apiBase }) => {
+    test('Login API returns correct response for Subscriber unsuccessful login invalid password @priority-critical', async ({ apiBase }) => {
  
     // test data
     const payload = {
@@ -55,7 +55,7 @@ test.describe('API - Login', { tag: ['@platform-api', '@feature-login'] }, () =>
 
   }); // end test
 
-    test('Login API returns correct response for Subscriber unsuccessful login invalid username @priority-critical @dave', async ({ apiBase }) => {
+    test('Login API returns correct response for Subscriber unsuccessful login invalid username @priority-critical', async ({ apiBase }) => {
  
     // test data
     const payload = {

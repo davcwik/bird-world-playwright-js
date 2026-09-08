@@ -8,6 +8,7 @@ import { ApiBase } from '../pages/ApiBase';
 import { GlobalHeaderBase } from '../pages/global-header/GlobalHeaderBase';
 import { GlobalHeaderDesktop } from '../pages/global-header/GlobalHeaderDesktop';
 import { GlobalHeaderMobile } from '../pages/global-header/GlobalHeaderMobile';
+import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 import { LostPasswordPage } from '../pages/LostPasswordPage';
 import { ProfilePage } from '../pages/ProfilePage';
@@ -40,6 +41,7 @@ type FrameworkFixtures = {
   request: APIRequestContext;
 
   // Non-Polymorphic Page Objects (no subclasses)
+  homePage: HomePage;
   loginPage: LoginPage;
   lostPasswordPage: LostPasswordPage;
   profilePage: ProfilePage;
@@ -57,6 +59,9 @@ type FrameworkFixtures = {
 export const test = base.extend<FrameworkFixtures>({
 
   // Non-Polymorphic Page Objects (no subclasses)
+  homePage: async ({ page }, use) => {
+    await use(new HomePage(page));
+  },
   apiBase: async ({ request }, use) => {
     await use(new ApiBase(request));
   },
