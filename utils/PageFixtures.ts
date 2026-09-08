@@ -8,9 +8,9 @@ import { ApiBase } from '../pages/ApiBase';
 import { GlobalHeaderBase } from '../pages/global-header/GlobalHeaderBase';
 import { GlobalHeaderDesktop } from '../pages/global-header/GlobalHeaderDesktop';
 import { GlobalHeaderMobile } from '../pages/global-header/GlobalHeaderMobile';
-import { LoginPageBase } from '../pages/LoginPageBase';
-import { LostPasswordPageBase } from '../pages/LostPasswordPageBase';
-import { ProfilePageBase } from '../pages/ProfilePageBase';
+import { LoginPage } from '../pages/LoginPage';
+import { LostPasswordPage } from '../pages/LostPasswordPage';
+import { ProfilePage } from '../pages/ProfilePage';
 
 
 /////////////////////////////////////////////////////////////
@@ -40,9 +40,9 @@ type FrameworkFixtures = {
   request: APIRequestContext;
 
   // Non-Polymorphic Page Objects (no subclasses)
-  loginPageBase: LoginPageBase;
-  lostPasswordPageBase: LostPasswordPageBase;
-  profilePageBase: ProfilePageBase;
+  loginPage: LoginPage;
+  lostPasswordPage: LostPasswordPage;
+  profilePage: ProfilePage;
 
   // Polymorphic Page Objects (has subclasses)
   globalHeaderBase: GlobalHeaderBase;
@@ -60,14 +60,14 @@ export const test = base.extend<FrameworkFixtures>({
   apiBase: async ({ request }, use) => {
     await use(new ApiBase(request));
   },
-  loginPageBase: async ({ page }, use) => {
-    await use(new LoginPageBase(page));
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
   },
-  lostPasswordPageBase: async ({ page }, use) => {
-    await use(new LostPasswordPageBase(page));
+  lostPasswordPage: async ({ page }, use) => {
+    await use(new LostPasswordPage(page));
   },
-  profilePageBase: async ({ page }, use) => {
-    await use(new ProfilePageBase(page));
+  profilePage: async ({ page }, use) => {
+    await use(new ProfilePage(page));
   },
 
   // Polymorphic Page Objects (has subclasses)

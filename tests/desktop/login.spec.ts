@@ -1,34 +1,36 @@
 import { test, expect } from '../../utils/PageFixtures';
 
 
-
 test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
-  test('Login Success and Logout happy path (user email) @priority-critical', async ({ loginPageBase, globalHeaderDesktop, profilePageBase }) => {
+  test('Login Fail, LoginSuccess and Logout happy path (user email) @priority-critical', async ({ loginPage, globalHeaderDesktop, profilePage }) => {
   
-    // Log in
-    await loginPageBase.goToLoginPage();
-    await loginPageBase.expectLoginPageToBeVisible();
-    await loginPageBase.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
-    await loginPageBase.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
-    await loginPageBase.clickLogInButton();
-    await profilePageBase.expectProfilePageToBeVisible();
+    // Log in Fail
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("InVaLidPw");
+    await loginPage.clickLogInButton();
+    await loginPage.expectErrorMessageTextToBeVisible("ERROR: Incorrect Username or Password");
+
+        // Log in Success
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
 
     // Log out
     await globalHeaderDesktop.hoverOverUserAvatarImage();
     await globalHeaderDesktop.clickLogOutButton();
-    await loginPageBase.expectLoginPageToBeVisible();
-    await loginPageBase.expectMessageTextToBeVisible("You are now logged out.");
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.expectMessageTextToBeVisible("You are now logged out.");
 
   }); // end test
 
   
-  test('Login Page Loads @priority-high', async ({ loginPageBase }) => {
 
-    await loginPageBase.goToLoginPage();
-    await loginPageBase.expectLoginPageToBeVisible();
-
-  }); // end test
 
 
   

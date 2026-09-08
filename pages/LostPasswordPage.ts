@@ -3,7 +3,7 @@ import { EnvFileReader } from '../utils/EnvFileReader';
 import { fillSecret } from '../utils/SecureActions';
 
 
-export class LostPasswordPageBase {
+export class LostPasswordPage {
 
   ///////////////
   // VARIABLES //

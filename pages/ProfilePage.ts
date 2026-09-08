@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-export class ProfilePageBase {
+export class ProfilePage {
 
   ///////////////
   // VARIABLES //

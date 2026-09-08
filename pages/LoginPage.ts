@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { EnvFileReader } from '../utils/EnvFileReader';
 import { fillSecret } from '../utils/SecureActions';
 
-export class LoginPageBase {
+export class LoginPage {
 
   ///////////////
   // VARIABLES //
@@ -12,6 +12,7 @@ export class LoginPageBase {
   private readonly logInFormContainer: Locator;
   private readonly lostYourPasswordLink: Locator;  
   private readonly messageTextBlock: Locator;
+  private readonly errorMessageTextBlock: Locator;
   private readonly page: Page;
   private readonly passwordInput: Locator;
   private readonly usernameEmailInput: Locator;
@@ -26,6 +27,7 @@ export class LoginPageBase {
     this.logInFormContainer = page.locator('#loginform');
     this.lostYourPasswordLink = page.getByRole('link', { name: 'Lost your password?' });
     this.messageTextBlock = page.locator("#login-message p");
+    this.errorMessageTextBlock = page.locator("#login_error p");
     this.page = page;
     this.passwordInput = page.getByRole('textbox', { name: 'Password' })
     this.usernameEmailInput = page.getByRole('textbox', { name: 'Username or Email Address' })
@@ -71,6 +73,12 @@ export class LoginPageBase {
   async expectMessageTextToBeVisible(text: string): Promise<void> {
     await test.step(`Verify message text is visible: ${text}`, async () => {
       await expect(this.messageTextBlock.getByText(text)).toBeVisible();
+    });         
+  }
+
+    async expectErrorMessageTextToBeVisible(text: string): Promise<void> {
+    await test.step(`Verify message text is visible: ${text}`, async () => {
+      await expect(this.errorMessageTextBlock.getByText(text)).toBeVisible();
     });         
   }
 
