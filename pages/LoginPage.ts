@@ -17,7 +17,7 @@ export class LoginPage {
   /////////////////
 
   constructor(page: Page) {
-    this.rememberMeTooltip = page.locator('[role="tooltip"]');
+    this.rememberMeTooltip = page.locator('[role="tooltip"], [role="dialog"][aria-label="Help"]');
     this.page = page;
   }
 
@@ -49,6 +49,13 @@ export class LoginPage {
     const usernameEmailInput = this.page.getByRole('textbox', { name: 'Username or Email Address' });
     await fillSecret(usernameEmailInput, username);
   }  
+
+  async clearUsernameEmailField(): Promise<void> {
+    await test.step(`Clear Username or Email Address field`, async () => {
+      const usernameEmailInput = this.page.getByRole('textbox', { name: 'Username or Email Address' });
+      await usernameEmailInput.fill('');
+    });
+  }
 
   /**
    * Input text in Password input field (fillSecret will mask text in logs)

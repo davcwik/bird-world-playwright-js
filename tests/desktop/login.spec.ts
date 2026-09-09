@@ -14,7 +14,7 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
     await loginPage.clickLogInButton();
     await loginPage.expectErrorMessageTextToBeVisible("ERROR: Incorrect Username or Password");
 
-        // Log in Success
+    // Log in Success
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
     await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
@@ -42,6 +42,7 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
     await loginPage.expectLoginPageToBeVisible();
 
     // Username field empty
+    await loginPage.clearUsernameEmailField();
     await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
     await loginPage.clickLogInButton();
     await loginPage.expectLoginPageToBeVisible();
