@@ -41,7 +41,7 @@ test.describe('Mobile - Login', { tag: ['@platform-mobile', '@feature-login'] },
   });
 
 
-  test('Login input fields empty state logic @priority-high', async ({ loginPage }) => {
+  test('Login input Required fields logic @priority-high', async ({ loginPage }) => {
 
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
@@ -49,12 +49,14 @@ test.describe('Mobile - Login', { tag: ['@platform-mobile', '@feature-login'] },
     // Password field empty
     await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
     await loginPage.clickLogInButton();
+    await loginPage.expectRequiredFieldValidationMessage('password', 'Please fill out this field.');
     await loginPage.expectLoginPageToBeVisible();
 
     // Username field empty
     await loginPage.clearUsernameEmailField();
     await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
     await loginPage.clickLogInButton();
+    await loginPage.expectRequiredFieldValidationMessage('username', 'Please fill out this field.');
     await loginPage.expectLoginPageToBeVisible();
 
   });

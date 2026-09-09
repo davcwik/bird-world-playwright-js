@@ -67,6 +67,15 @@ export class LoginPage {
     await fillSecret(passwordInput, password);
   }   
 
+  async expectRequiredFieldValidationMessage(field: 'username' | 'password', message: string): Promise<void> {
+    await test.step(`Verify ${field} required field validation message`, async () => {
+      const requiredField = field === 'username'
+        ? this.page.getByRole('textbox', { name: 'Username or Email Address' })
+        : this.page.getByRole('textbox', { name: 'Password' });
+      await expect(requiredField).toHaveJSProperty('validationMessage', message);
+    });
+  }
+
   async expectPasswordFieldType(type: 'password' | 'text'): Promise<void> {
     await test.step(`Verify password field type is ${type}`, async () => {
       const passwordInput = this.page.getByRole('textbox', { name: 'Password' });
