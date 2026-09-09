@@ -31,6 +31,16 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
   }); // end test
 
 
+  test('Login success using username @priority-high', async ({ loginPage, profilePage }) => {
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_NAME");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
+  }); // end test
+
+
   test('Login input fields empty state logic @priority-high', async ({ loginPage }) => {
   
     await loginPage.goToLoginPage();
@@ -46,6 +56,21 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
     await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
     await loginPage.clickLogInButton();
     await loginPage.expectLoginPageToBeVisible();
+
+  }); // end test
+
+
+  test('Show/hide password control @priority-medium', async ({ loginPage }) => {
+
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+
+    await loginPage.expectPasswordFieldType('password');
+    await loginPage.clickShowPasswordButton();
+    await loginPage.expectPasswordFieldType('text');
+    await loginPage.clickHidePasswordButton();
+    await loginPage.expectPasswordFieldType('password');
 
   }); // end test
 

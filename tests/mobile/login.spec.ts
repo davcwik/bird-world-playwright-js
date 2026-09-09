@@ -31,9 +31,13 @@ test.describe('Mobile - Login', { tag: ['@platform-mobile', '@feature-login'] },
   });
 
   
-  test('Login Page Loads @priority-high', async ({ loginPage }) => {
+  test('Login success using username @priority-high', async ({ loginPage, profilePage }) => {
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_NAME");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
   });
 
 
@@ -52,6 +56,21 @@ test.describe('Mobile - Login', { tag: ['@platform-mobile', '@feature-login'] },
     await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
     await loginPage.clickLogInButton();
     await loginPage.expectLoginPageToBeVisible();
+
+  });
+
+
+  test('Show/hide password control @priority-medium', async ({ loginPage }) => {
+
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+
+    await loginPage.expectPasswordFieldType('password');
+    await loginPage.clickShowPasswordButton();
+    await loginPage.expectPasswordFieldType('text');
+    await loginPage.clickHidePasswordButton();
+    await loginPage.expectPasswordFieldType('password');
 
   });
 

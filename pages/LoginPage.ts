@@ -67,6 +67,27 @@ export class LoginPage {
     await fillSecret(passwordInput, password);
   }   
 
+  async expectPasswordFieldType(type: 'password' | 'text'): Promise<void> {
+    await test.step(`Verify password field type is ${type}`, async () => {
+      const passwordInput = this.page.getByRole('textbox', { name: 'Password' });
+      await expect(passwordInput).toHaveAttribute('type', type);
+    });
+  }
+
+  async clickShowPasswordButton(): Promise<void> {
+    await test.step(`Click Show password button`, async () => {
+      const showPasswordButton = this.page.getByRole('button', { name: 'Show password' });
+      await showPasswordButton.click();
+    });
+  }
+
+  async clickHidePasswordButton(): Promise<void> {
+    await test.step(`Click Hide password button`, async () => {
+      const hidePasswordButton = this.page.getByRole('button', { name: 'Hide password' });
+      await hidePasswordButton.click();
+    });
+  }
+
   async expectMessageTextToBeVisible(text: string): Promise<void> {
     await test.step(`Verify message text is visible: ${text}`, async () => {
       const messageTextBlock = this.page.locator("#login-message p");
