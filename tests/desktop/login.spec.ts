@@ -1,34 +1,130 @@
 import { test, expect } from '../../utils/PageFixtures';
-
+import { BrowserUtils } from '../../utils/BrowserUtils';
 
 
 test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] }, () => {
 
-  test('Login Success and Logout happy path (user email) @priority-critical', async ({ loginPageBase, globalHeaderDesktop, profilePageBase }) => {
+  test('Login Fail, LoginSuccess and Logout happy path (user email) @priority-critical', async ({ loginPage, globalHeaderDesktop, profilePage }) => {
   
-    // Log in
-    await loginPageBase.goToLoginPage();
-    await loginPageBase.expectLoginPageToBeVisible();
-    await loginPageBase.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
-    await loginPageBase.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
-    await loginPageBase.clickLogInButton();
-    await profilePageBase.expectProfilePageToBeVisible();
+    // Log in Fail
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("InVaLidPw");
+    await loginPage.clickLogInButton();
+    await loginPage.expectErrorMessageTextToBeVisible("ERROR: Incorrect Username or Password");
+
+    // Log in Success
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
 
     // Log out
     await globalHeaderDesktop.hoverOverUserAvatarImage();
     await globalHeaderDesktop.clickLogOutButton();
-    await loginPageBase.expectLoginPageToBeVisible();
-    await loginPageBase.expectMessageTextToBeVisible("You are now logged out.");
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.expectMessageTextToBeVisible("You are now logged out.");
 
   }); // end test
 
+
+  test('Login success using username @priority-high', async ({ loginPage, profilePage }) => {
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_NAME");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
+  }); // end test
+
+
+  test('Login input Required fields logic @priority-high', async ({ loginPage }) => {
   
-  test('Login Page Loads @priority-high', async ({ loginPageBase }) => {
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
 
-    await loginPageBase.goToLoginPage();
-    await loginPageBase.expectLoginPageToBeVisible();
+    // Password field empty
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.clickLogInButton();
+    await loginPage.expectRequiredFieldValidationMessage('password', 'Please fill out this field.');
+    await loginPage.expectLoginPageToBeVisible();
+
+    // Username field empty
+    await loginPage.clearUsernameEmailField();
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await loginPage.expectRequiredFieldValidationMessage('username', 'Please fill out this field.');
+    await loginPage.expectLoginPageToBeVisible();
 
   }); // end test
+
+
+  test('Show/hide password control @priority-medium', async ({ loginPage }) => {
+
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+
+    await loginPage.expectPasswordFieldType('password');
+    await loginPage.clickShowPasswordButton();
+    await loginPage.expectPasswordFieldType('text');
+    await loginPage.clickHidePasswordButton();
+    await loginPage.expectPasswordFieldType('password');
+
+  }); // end test
+
+
+  test('Remember Me checkbox session logic @priority-high @dave', async ({ globalHeaderDesktop,loginPage, profilePage, page }) => {
+  
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+
+    // Remember Me checkbox not selected
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
+    await BrowserUtils.verifyWordPressRememberMeCookie(page.context(), 'disabled');
+
+    await globalHeaderDesktop.hoverOverUserAvatarImage();
+    await globalHeaderDesktop.clickLogOutButton();
+    await loginPage.expectLoginPageToBeVisible();
+
+      // Remember Me checkbox selected
+    await loginPage.inputTextInUsernameEmailField("SUBSCRIBER_USER_EMAIL");
+    await loginPage.clickRememberMeCheckbox();
+    await loginPage.inputTextInPasswordField("SUBSCRIBER_USER_PASSWORD");
+    await loginPage.clickLogInButton();
+    await profilePage.expectProfilePageToBeVisible();
+    await BrowserUtils.verifyWordPressRememberMeCookie(page.context(), 'enabled');
+
+  }); // end test  
+
+
+    test('Login Page miscellaneous functionality @priority-medium', async ({ homePage, loginPage }) => {
+  
+    await loginPage.goToLoginPage();
+    await loginPage.expectLoginPageToBeVisible();
+
+    // Remember Me tooltip icon functionality
+    await loginPage.clickRememberMeTooltipIcon();
+    const tooltipText: string = "Selecting \"Remember Me\" increases the length of time until you’re asked to log in again on this device. To keep your account secure, use this option only on your personal devices.";
+    await loginPage.expectRememberMeTooltipTextToBeVisible(tooltipText);
+    await loginPage.clickRememberMeTooltipXCloseButton();
+    await loginPage.expectRememberMeTooltipNotToBeVisible();
+
+    // Go to Bird World link functionality
+    await loginPage.clickGoToBirdWorldLink();
+    await homePage.expectHomePageToBeVisible();
+  
+
+  }); // end test
+
+
+
 
 
   
