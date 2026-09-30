@@ -39,7 +39,7 @@ test.describe('API - Posts', { tag: ['@platform-api', '@feature-posts'] }, () =>
   }); // end test
 
 
-  test('POST Publish Blog post returns 201 @priority-critical @dave', async ({ apiBase, request }) => {
+  test('POST Publish Blog post returns expected response data @priority-critical @dave', async ({ apiBase, request }) => {
 
     const endpoint = '/wp-json/wp/v2/posts';
     const payload = {
@@ -48,12 +48,10 @@ test.describe('API - Posts', { tag: ['@platform-api', '@feature-posts'] }, () =>
       status: 'publish',
     };
 
-    // 1. Generate the standard HTTP Basic Auth token
     const username = EnvFileReader.getProperty('ADMIN_USER_NAME');
     const password = EnvFileReader.getProperty('ADMIN_USER_APP_PASSWORD');
     const auth = Buffer.from(`${username}:${password}`).toString('base64');
 
-    // 2. Pass the token directly into the allowed 'headers' property
     const response = await request.post(endpoint, {
       headers: {
         'Authorization': `Basic ${auth}`,
