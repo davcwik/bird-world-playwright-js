@@ -39,7 +39,7 @@ test.describe('API - Posts', { tag: ['@platform-api', '@feature-posts'] }, () =>
   }); // end test
 
 
-  test('POST Publish Blog post returns expected response data @priority-critical @dave', async ({ apiBase, request }) => {
+  test('POST Publish Blog post returns expected response data @priority-critical', async ({ apiBase, request }) => {
 
     const endpoint = '/wp-json/wp/v2/posts';
     const payload = {
