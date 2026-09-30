@@ -77,7 +77,7 @@ test.describe('Desktop - Login', { tag: ['@platform-desktop', '@feature-login'] 
   }); // end test
 
 
-  test('Remember Me checkbox session logic @priority-high @dave', async ({ globalHeaderDesktop,loginPage, profilePage, page }) => {
+  test('Remember Me checkbox session logic @priority-high', async ({ globalHeaderDesktop,loginPage, profilePage, page }) => {
   
     await loginPage.goToLoginPage();
     await loginPage.expectLoginPageToBeVisible();
