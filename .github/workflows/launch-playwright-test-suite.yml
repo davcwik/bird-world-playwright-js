@@ -38,6 +38,7 @@ jobs:
 
       - name: Set Parameters for Selected Suite
         id: config
+        shell: bash
         run: |
           
           # get the suite name from the Github Actions UI input
