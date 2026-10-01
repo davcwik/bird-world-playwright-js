@@ -38,6 +38,7 @@ jobs:
 
       - name: Set Parameters for Selected Suite
         id: config
+        shell: bash
         run: |
           
           # get the suite name from the Github Actions UI input
@@ -105,6 +106,10 @@ jobs:
           SUBSCRIBER_USER_EMAIL: ${{ secrets.SUBSCRIBER_USER_EMAIL }}
           SUBSCRIBER_USER_NAME: ${{ secrets.SUBSCRIBER_USER_NAME }}
           SUBSCRIBER_USER_PASSWORD: ${{ secrets.SUBSCRIBER_USER_PASSWORD }}
+          ADMIN_USER_EMAIL: ${{ secrets.ADMIN_USER_EMAIL }}
+          ADMIN_USER_NAME: ${{ secrets.ADMIN_USER_NAME }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
+          ADMIN_USER_APP_PASSWORD: ${{ secrets.ADMIN_USER_APP_PASSWORD }}
         run: |
           # launch test run (--pass-with-no-tests generates report if even no tests are run)
           echo "Target Browser: $BROWSER"
