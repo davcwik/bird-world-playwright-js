@@ -28,23 +28,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
-        if: ${{ !contains(github.workflow, 'api') }}
-        run: npx playwright install chromium # install only chrome
-        # Note: WebKit browser is not supported for MacOS 13
+      # The following steps are skipped because Playwright no longer allows browser installs on MacOS13. The tests are instead configured to use the local installed browsers.
+      #- name: Install Playwright Browsers
+        #if: ${{ !contains(inputs.suite, 'api') }}
+        #run: npx playwright install chromium # install only chrome
+        ## Note: WebKit browser is not supported for MacOS 13
 
-      - name: Skip Playwright Browser Install
-        if: ${{ contains(github.workflow, 'api') }}
-        run: echo "This is an API test run. Skipping Playwright browser installation."
-        
-      # - name: Decrypt Environment File
-      #   env:
-      #       ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
-      #       ENV: ${{ inputs.environment }}
-      #   run: |
-      #       gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
-      #       --output .env.$ENV .env.$ENV.gpg
-
+      #- name: Skip Playwright Browser Install
+        #if: ${{ contains(inputs.suite, 'api') }}
+        #run: echo "This is an API test run. Skipping Playwright browser installation."
+    
       - name: Run Tests
         continue-on-error: true # subsequent steps run even when tests fail
         env:
