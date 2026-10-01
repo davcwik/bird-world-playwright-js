@@ -37,18 +37,28 @@ jobs:
         if: ${{ contains(github.workflow, 'api') }}
         run: echo "This is an API test run. Skipping Playwright browser installation."
         
-      - name: Decrypt Environment File
-        env:
-            ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
-            ENV: ${{ inputs.environment }}
-        run: |
-            gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
-            --output .env.$ENV .env.$ENV.gpg
+      # - name: Decrypt Environment File
+      #   env:
+      #       ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
+      #       ENV: ${{ inputs.environment }}
+      #   run: |
+      #       gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
+      #       --output .env.$ENV .env.$ENV.gpg
 
       - name: Run Tests
         continue-on-error: true # subsequent steps run even when tests fail
         env:
+          # Map GitHub Actions UI inputs to environment variables
           ENV: ${{ inputs.environment }}  
+          # Map GitHub Secrets to environment variables
+          BASE_URL: ${{ secrets.BASE_URL }}
+          SUBSCRIBER_USER_EMAIL: ${{ secrets.SUBSCRIBER_USER_EMAIL }}
+          SUBSCRIBER_USER_NAME: ${{ secrets.SUBSCRIBER_USER_NAME }}
+          SUBSCRIBER_USER_PASSWORD: ${{ secrets.SUBSCRIBER_USER_PASSWORD }}
+          ADMIN_USER_EMAIL: ${{ secrets.ADMIN_USER_EMAIL }}
+          ADMIN_USER_NAME: ${{ secrets.ADMIN_USER_NAME }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
+          ADMIN_USER_APP_PASSWORD: ${{ secrets.ADMIN_USER_APP_PASSWORD }}
         run: |
 
           # get the filename (e.g., "desktop_tests.yml") from the full workflow reference path
@@ -75,6 +85,11 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
           GITHUB_RUN_ID: ${{ github.run_id}}
           TEST_RUN_TAGS: ${{ env.TEST_RUN_TAGS }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
         run: |
           source /Users/david/Documents/automation/work/bird-world-playwright-js/.venv/bin/activate
           python parse_and_save_playwright_results.py          
