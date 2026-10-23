@@ -23,10 +23,16 @@ export class HomePage {
   // FUNCTIONS //
   ///////////////
 
+  async goToHomePage(): Promise<void> {
+    await test.step(`Go to Home Page`, async () => {
+      await this.page.goto('/');
+    });
+  }
+
   async expectHomePageToBeVisible(): Promise<void> {
     await test.step(`Verify Home Page is visible`, async () => {
       await this.page.waitForLoadState('networkidle');
-      const homePageContent = this.page.locator("//h2/a[contains(text(), 'Welcome to Bird World')]");
+      const homePageContent = this.page.locator("//h2[contains(text(), 'Welcome to Bird World')]");
       await expect(homePageContent).toBeVisible();
     });
   }
