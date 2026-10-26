@@ -5,7 +5,8 @@
       "args": [
         "-y",
         "@playwright/mcp",
-        "--headless=false"
+        "--headless=false",
+        "--browser=chrome",
       ]
     }
   }

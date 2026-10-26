@@ -1,0 +1,91 @@
+========================================================================
+PLAYWRIGHT MCP SERVER CONFIGURATION CHEAT SHEET
+========================================================================
+
+File Location: .vscode/mcp.json
+Used By:       VS Code & GitHub Copilot Agent Session
+
+------------------------------------------------------------------------
+1. CORE SCHEMA RULES
+------------------------------------------------------------------------
+* Do NOT use standard JSON comments (// or /*) inside mcp.json. It will crash.
+* Must use "servers" as top-level block in mcp.json (instead of "mcpServers").
+
+------------------------------------------------------------------------
+2. BROWSER & EMULATION PROFILES
+------------------------------------------------------------------------
+
+[A] DESKTOP PLAYWRIGHT CHROMIUM BINARY (Default Engine)
+    "args": ["-y", "@playwright/mcp", "--headless=false", "--browser=chromium"]
+
+[B] DESKTOP GOOGLE CHROME (Uses your local system Chrome installation)
+    "args": ["-y", "@playwright/mcp", "--headless=false", "--browser=chrome"]
+
+[C] MOBILE IPHONE EMULATION (Auto-configures viewports and touch inputs)
+    "args": ["-y", "@playwright/mcp", "--headless=false", "--device=iPhone 14"]
+
+[D] MOBILE ANDROID EMULATION
+    "args": ["-y", "@playwright/mcp", "--headless=false", "--device=Pixel 7"]
+
+------------------------------------------------------------------------
+3. IMPORTANT LAUNCH RULES
+------------------------------------------------------------------------
+* Never combine "--browser" and "--device" flags in the same args array. 
+If a device is specified, Playwright selects the correct engine automatically.
+* To switch profiles, simply copy the lines from the args examples above and paste them over the "args" array in mcp.json.
+
+------------------------------------------------------------------------
+3. MISC NOTES
+------------------------------------------------------------------------
+
+[A] --browser options: chromium, chrome, firefox, webkit
+
+[B] --headless options: true (no browser UI) or false (show browser UI)
+
+[C] to verify Playwright MCP server is installed and accessible by Copilot Agent: 
+In the agent chat window, submit this prompt: @copilot list available MCP tools
+The output from Copilot shows the following tool names under the "Other" category:
+openBrowserPage, navigatePage, screenshotPage, clickElement, typeInPage, and runPlaywrightCode
+
+------------------------------------------------------------------------
+4. GENERAL INSTALLATION NOTES TO INSTALL PLAYWRIGHT MCP SERVER IN VSCODE AND INTEGRATE WITH COPILOT
+------------------------------------------------------------------------
+[A] Step 1: Install the Playwright MCP Package 
+install the core package inside your existing Playwright project
+Run this command in your VS Code terminal in your project root: npm install @playwright/mcp --save-dev
+
+[B] Step 2: Create mcp.json file. This will contain the Playwright MCP Server configuration data.
+1. Manually create a folder named .vscode at the root of your project.
+2. Create a file named mcp.json inside it.
+3. Paste the configuration snippet:
+{
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--headless=false",
+        "--browser=chrome",
+      ]
+    }
+  }
+}
+
+[C] Step 3: Grant File Access Permissions
+The Playwright MCP server needs permission to look at your existing local code files to interact with them.
+Note: this may not be necessary and can be skipped if you are not sure
+
+How to verify your Workspace is Allowed:
+Look at the very top of your VS Code window or look for a small "Restricted Mode" status bar banner at the bottom left.
+• If you see "Restricted Mode": Click it and select "Trust Workspace". This instantly grants the MCP server the permission it needs to read your Playwright tests.
+• If you don't see it: Your project folder is already trusted, meaning you are completely clear to proceed to Step
+
+[D] Step 4: Restart to load changes and run Playwright MCP Server test
+1. Reload your VS Code instance (Cmd + Shift + P -> Developer: Reload Window).
+2. In the Copilot chat window, make sure you are in Agent mode
+3. Submit the following prompt in the chat window: 
+"Use your Playwright MCP tools to open a browser window, navigate to https://example.com, take a screenshot, and tell me what the main heading text of the page is."
+4. Verify the Copilot agent response is correct for the test result
+
+========================================================================

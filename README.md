@@ -52,7 +52,47 @@ Custom Skills have been created and saved in this codebase:
 * update-playwright-dependencies: creates a new branch, updates dependencies to current version, fixes any broken code, runs Playwright tests to verify fixes and then creates a Github PR for human review
 
 The Playwright MCP server is included in this codebase:
-* see .vscode/mcp.json for configuration details
+* use .vscode/mcp.json for configuration settings
+* see .vscode/mcp-instructions for additional notes
 * The MCP server provides an AI agent with various Playwright tools to perform UI or Accesibility testing in a browser and provide feedback such as Pass/Fail results or take screenshots
 * The MCP configuration is configured to launch the browser in headed mode by default. This is preferred because headless mode browsers can sometimes return test failures that are false positives.
 
+GENERAL INSTALLATION NOTES TO INSTALL PLAYWRIGHT MCP SERVER IN VSCODE AND INTEGRATE WITH COPILOT:
+
+Step 1: Install the Playwright MCP Package 
+* Install the core package inside your existing Playwright project
+* Run this command in your VS Code terminal in your project root: npm install @playwright/mcp --save-dev
+
+Step 2: Create mcp.json file. This will contain the Playwright MCP Server configuration data.
+1. Manually create a folder named .vscode at the root of your project.
+2. Create a file named mcp.json inside it.
+3. Paste the configuration snippet:
+{
+  "servers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--headless=false",
+        "--browser=chrome",
+      ]
+    }
+  }
+}
+
+Step 3: Grant File Access Permissions
+* The Playwright MCP server needs permission to look at your existing local code files to interact with them.
+* Note: this may not be necessary and can be skipped if you are not sure
+
+How to verify your Workspace is Allowed:
+* Look at the very top of your VS Code window or look for a small "Restricted Mode" status bar banner at the bottom left.
+* If you see "Restricted Mode": Click it and select "Trust Workspace". This instantly grants the MCP server the permission it needs to read your Playwright tests.
+* If you don't see it: Your project folder is already trusted, meaning you are completely clear to proceed to Step
+
+Step 4: Restart to load changes and run Playwright MCP Server test
+1. Reload your VS Code instance (Cmd + Shift + P -> Developer: Reload Window).
+2. In the Copilot chat window, make sure you are in Agent mode
+3. Submit the following prompt in the chat window: (insert your own test website url)
+* "Use your Playwright MCP tools to open a browser window, navigate to https://somewebsite.com, take a screenshot, and tell me what the main heading text of the page is."
+4. Verify the Copilot agent response is correct for the test result
