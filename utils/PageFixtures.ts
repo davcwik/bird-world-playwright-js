@@ -5,6 +5,7 @@ import { test as base, Page, APIRequestContext } from '@playwright/test';
 /////////////////////////////////////////////////
 
 import { ApiBase } from '../pages/ApiBase';
+import { CategoryPage } from '../pages/CategoryPage';
 import { GlobalHeaderBase } from '../pages/global-header/GlobalHeaderBase';
 import { GlobalHeaderDesktop } from '../pages/global-header/GlobalHeaderDesktop';
 import { GlobalHeaderMobile } from '../pages/global-header/GlobalHeaderMobile';
@@ -45,6 +46,7 @@ type FrameworkFixtures = {
   loginPage: LoginPage;
   lostPasswordPage: LostPasswordPage;
   profilePage: ProfilePage;
+  categoryPage: CategoryPage;
 
   // Polymorphic Page Objects (has subclasses)
   globalHeaderBase: GlobalHeaderBase;
@@ -59,6 +61,9 @@ type FrameworkFixtures = {
 export const test = base.extend<FrameworkFixtures>({
 
   // Non-Polymorphic Page Objects (no subclasses)
+  categoryPage: async ({ page }, use) => {
+    await use(new CategoryPage(page));
+  },
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
   },
