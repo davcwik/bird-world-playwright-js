@@ -91,7 +91,7 @@ export default defineConfig({
       // If tests are running in Github cloud, you must use this browser.
       name: 'Playwright Mobile Chrome',
       use: {
-        ...devices['iPhone X'],
+        ...devices['iPhone 16'],
         defaultBrowserType: 'chromium', // do not delete or else Webkit will be used instead of Chromium engine
         screenshot: 'only-on-failure'
       }
